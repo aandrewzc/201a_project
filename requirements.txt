@@ -1,8 +1,10 @@
 certifi==2020.4.5.1
 chardet==3.0.4
 embeddings==0.0.8
+fuzzywuzzy==0.18.0
 idna==2.9
 numpy==1.18.3
+python-Levenshtein==0.12.0
 requests==2.23.0
 tqdm==4.45.0
 urllib3==1.25.9
