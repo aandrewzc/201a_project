@@ -1,0 +1,236 @@
+Rule,Value,Description
+NW LAYER,,
+NW.1,180 nm,Minimum spacing of NW/(not NW) at different potential
+NW.2,110 nm,Minimum spacing of NW/(not NW) at the same potential
+NW.3,160 nm,Minimum width of NW/(not NW)
+NW.4,0.140 um2,Minimum area/enclosed area of NW
+NW.5,none,NW Must be orthogonal
+NW.6,80nm,Minimum extension of NW past GATE
+ACTIVE LAYER,,
+ACT.1,48 nm,Minimum vertical width of ACT
+ACT.2,40 nm,Incremental vertical width of ACT
+ACT.3,62 nm,Minimum vertical spacing of ACT
+ACT.4,96 nm,Minimum horizontal width of ACT
+ACT.5,"32, 96, or >= 160 nm",HORIZONTAL spacing of ACT
+ACT.6,112 nm,Minimum notch of ACT
+ACT.7,31 nm,Minimum enclosure/spacing of NW to ACT
+ACT.8,0.004608 um^2,Minimum area/enclosed area of ACT
+ACT.9,30 um,Maximum distance between ACT forming a MOS device and ACT forming a bulk/substrate contact within the same well/substrate
+GATE LAYER (Double Patterning - 2 colors),,
+GATE.1,"20 nm
+16 nm
+14 nm",GATE[A|B] exact horizontal width
+GATE.2,128 nm,Horizontal Pitch of GATE[A|B]
+GATE.3,44 nm,Min HORIZONTAL spacing of GATEA and GATEB
+GATE.4,none,GATE[A|B] may not bend
+GATE.5,38 nm,ACT min extension past GATE[A|B]
+GATE.6,62 nm,GATE[A|B] min extension past ACT (GATEC ignored)
+GATE.7,200 nm,"GATE[A|B] minimum length (vertical edge, GATEC ignored)"
+GATE.8,236 nm,(GATE[A|B] not GATEC) maximum distance to neighbor shape (same design mask outside GATEC)
+GATE LAYER (Double Patterning - 1 color that will be processed later into 2 colors / decomposition at process level),,
+GATE.1AB,"20 nm
+16 nm
+14 nm",GATEAB exact horizontal width
+GATE.2AB,64 nm,Horizontal Pitch of GATEAB
+GATE.3AB,44 nm,Min HORIZONTAL spacing of GATEAB
+GATE.4AB,none,GATEAB may not bend
+GATE.5AB,38 nm,ACT min extension past GATEAB
+GATE.6AB,62 nm,GATEAB min extension past ACT (GATEC ignored)
+GATE.7AB,200 nm,"GATEAB minimum length (vertical edge, GATEC ignored)"
+GATE.8AB,236 nm,(GATEAB not GATEC) maximum distance to neighbor shape (same design mask outside GATEC)
+GATE C (Gate Metal Cut Mask),,
+GATEC.1.a,32 nm,Exact vertical width of GATEC (shape is oriented horizontally)
+GATEC.1.b,64 nm,Exact horizontal width of GATEC (shape is oriented vertically)
+GATEC.2.a,128 nm,Minimum horizontal length of GATEC (shape is oriented horizontally)
+GATEC.2.b,64nm,Exact vertical length of GATEC (shape is oriented vertically)
+GATEC.3,128 nm,Minimum space of GATEC
+GATEC.4,22nm,"Minimum extension of GATEC past GATE[A|B], HORIZONTAL direction"
+GATEC.5,15 nm,GATEC minimum space to ACT
+GATEC.6,none,GATEC may not bend
+GATEC.7,none,GATEC shape bottom or top must be aligned if distance < 192 nm
+VTL/VTH LAYERS,,
+VT.1,144 nm,Minimum width of VTL/VTH/(not (VTL or VTH))
+VT.2,144 nm,Minimum space of VTL/VTH/(not (VTL or VTH))
+VT.3,64nm,Minimum enclosure of GATE[A|B] by VTL/VTH
+VT.4,44 nm,Minimum space of VTL/VTH to GATEA|B
+NIM/PIM LAYER,,
+NIM/PIM.1,128 nm,Minimum width/spacing/notch of NIM/PIM
+NIM/PIM.2,32 nm,Minimum spacing of NIM/PIM to channel
+NIM/PIM.3,32 nm,Minimum extension of NIM/PIM past channel (HORIZONTAL directions)
+NIM/PIM.4,30 nm,Minimum extension of NIM/PIM past channel (VERTICAL directions)
+NIM/PIM.5,30 nm,Minimum space of NIM/PIM to (ACT enclosed by PIM/NIMP)
+NIM/PIM.6,30 nm,Minimum enclosure of ACT by NIM/PIM
+NIM/PIM.7,0.049 um2,Minimum NIM/PIM area/enclosed area
+AIL1 LAYER,,
+AIL1.1,28 nm,Minimum Horizontal Width of AIL1
+AIL1.2,36 nm,Minimum Horizontal Spacing of AIL1
+AIL1.3,8 nm,Minimum spacing of AIL1 to GATE[A|B]
+AIL1.4,2 nm,Minimum extension of ACT past AIL1 (HORIZONTAL direction)
+AIL1.5,58 nm,Vertical length of AIL1
+AIL1.6,62 nm,Vertical spacing of AIL1
+AIL1.7,0 nm,AIL1 horizontal edges (perpendicular to gate direction) must be aligned or extend beyond ACT horizontal edges (AIL1 must extend across ACT shape). Minimum vertical extension of AIL1 past ACT is 0nm.
+AIL1.8,none,AIL1 may not bend
+AIL2 LAYER,,
+AIL2.1,24 nm,Minimum Horizontal width of AIL2
+AIL2.2,40 nm,Minimum Horizontal spacing of AIL2
+AIL2.3,2 nm,Minimum spacing between AIL2 and GATE[A|B]
+AIL2.4,2 nm,"Minimum enclosure of AIL2 by AIL1, HORIZONTAL direction"
+AIL2.5,6 nm,Minimum Vertical overlap of AIL1 and AIL2
+AIL2.6,68 nm,Vertical length of AIL2
+AIL2.7,62 nm,Vertical spacing of AIL2
+AIL2.8,none,AIL2 may not bend
+AIL2.9,16 nm,Horizontal spacing of AIL2 and AIL1 not on same net
+AIL2.10,16 nm,Vertical spacing of AIL2 and AIL1 not on same net
+GIL LAYER,,
+GIL.1,44 nm,Minimum VERTICAL width of GIL
+GIL.2,56 nm,Minimum HORIZONTAL length of GIL
+GIL.3,32 nm,GIL minimum VERTICAL space (40nm rectangular extension)
+GIL.4,40 nm,GIL minimum HORIZONTAL space (32nm rectangular extension)
+GIL.5,6 nm,GIL VERTICAL space to ACT
+GIL.6,2 nm,GIL minimum HORIZONTAL extension past GATE[A|B]
+GIL.7,8 nm,GIL HORIZONTAL space to AIL2 (different nets)
+GIL.8,5 nm,GIL VERTICAL space to AIL2
+GIL.9,10 nm,GIL minimum HORIZONTAL space to GATE[A|B]
+GIL.10,2 nm,AIL2 min HORIZONTAL overlap of GIL (same net)
+GIL.11,4 nm,AIL2 minimum VERTICAL extension past GIL
+GIL.12,none,GIL may not bend
+"V0 LAYER (double patterning ignored at design level, assuming decomposition at mask level)",,
+V0.1,none,V0 shape is a square or rectangle respecting V0.1.a or V0.1.b. V0.1.b is mandatory when V0 is enclosed by Metal1 shapes with width >= 60nm.
+V0.1.a,28 nm,V0 is a square with 28nm edge length
+V0.1.b,"[28nm, 56nm]","V0 is a rectangular of sides = [28nm, 56nm, 28nm, 56nm]"
+V0.2,36 nm,Minimum spacing of V0 (if runlength exactly 28nm) - Full alignment
+V0.3,50 nm,Minimum spacing of V0 for runlength < 28nm
+V0.4,none,V0 must be inside [AIL2|GIL] and M1[A|B]
+V0.5.a,-2 nm,"V0 enclosure by AIL2 on two opposite sides, HORIZONTAL direction"
+V0.5.b,20 nm,"V0 enclosure by AIL2 on two opposite sides, VERTICAL direction"
+V0.6.a,-2 nm,"V0 enclosure by (GIL and AIL2) on two opposite sides, HORIZONTAL direction"
+V0.6.b,8 nm,"V0 enclosure by (GIL and AIL2) on two opposite sides, VERTICAL direction"
+V0.7.a,14 nm,"V0 enclosure by (GIL not AIL2) on two opposite sides, HORIZONTAL direction"
+V0.7.b,8 nm,"V0 enclosure by (GIL not AIL2) on two opposite sides, VERTICAL direction"
+V0.8,38 nm,Minimum space of V0 and AIL2 of different net
+V0.9,6 nm,Minimum space of V0 and GIL of different net
+V0.10,none,V0 enclosed by GIL may not overlap with (GATE[A|B] over ACT)
+METAL1 LAYER,,
+M1.1,28 nm,M1[A|B] width
+M1.2,56 nm,One of two edges connected to the same vertex must have at least
+M1.3,1800 nm,Maximum length of M1[A|B] for wires with min width (28nm)
+M1.4,68 nm,M1[A|B] end-of-Line spacing (EOL edge defined as edge < 32nm)
+M1.5,54 nm,M1[A|B] minimum space and notch
+M1.6,36 nm,Minimum spacing of M1A to M1B
+M1.7,44 nm,End-of-Line spacing of M1A to M1B (EOL edge defined as edge < 32nm)
+M1.8,68 nm,Minimum spacing of M1[A|B] wider than 32 nm and longer than 240 nm
+M1.9,76 nm,Minimum spacing of M1[A|B] wider than 40 nm and longer than 240 nm
+M1.10,92 nm,Minimum spacing of M1[A|B] wider than 64 nm and longer than 480 nm
+M1.11,120 nm,Minimum spacing of M1[A|B] wider than 120 nm and longer than 1.2 um
+M1.12,240 nm,Minimum spacing of M1[A|B] wider than 240 nm and longer than 1.8 um
+M1.13,320 nm,Minimum spacing of M1[A|B] wider than 320 nm and longer than 2.4 um
+M1.14,600 nm,Minimum spacing of M1[A|B] wider than 600 nm and longer than 2.4 um
+M1.15,44 nm,M1[A|B] minimum spacing to M1[B|A] wider than 32 nm and longer than 240 nm
+M1.16,50 nm,M1[A|B] minimum spacing to M1[B|A] wider than 40 nm and longer than 240 nm
+M1.17,60 nm,M1[A|B] minimum spacing to M1[B|A] wider than 64 nm and longer than 480 nm
+M1.18,78 nm,M1[A|B] minimum spacing to M1[B|A] wider than 120 nm and longer than 1.2 um
+M1.19,156 nm,M1[A|B] minimum spacing to M1[B|A] wider than 240 nm and longer than 1.8 um
+M1.20,200 nm,M1[A|B] minimum spacing to M1[B|A] wider than 320 nm and longer than 2.4 um
+M1.21,400 nm,M1[A|B] minimum spacing to M1[B|A] wider than 600 nm and longer than 2.4 um
+M1.22,40 nm,Minimum overlap of M1A and M1B (stitch region length)
+M1.23,"[28, 2, 28, 2]
+[32, 0, 32, 0]
+[10, 10, 10, 10]",Allowed enclosures of V0 by M1[A|B]
+M1.24,"[32, 2, 32, 2]
+[40, 0, 40, 0]
+[14, 14, 14, 14]",Allowed enclosures of V0 by M1[A|B] on overlapping zone (stitch area)
+M1.26,none,V0 shape must be rectangular if enclosing M1[A|B] wire width >= 60nm
+M1.27,0.0024 um2,M1[A|B] minimum area for rectangular shape
+M1.28,0.0036 um2,M1[A|B] minimum area for non-rectangular shape
+"Vn LAYER, n=1..5",,
+Vn.1,none,V1|VINTn shape is a square or rectangle respecting Vn.1.a or Vn.1.b. Vn.1.b is mandatory when V1|VINTn is enclosed by [M1|MINT1] or [MINTn|MINT(n+1)] shapes with width >= 60nm.
+Vn.1.a,28 nm,V1|VINTn is a square with 28nm edge length
+Vn.1.b,"[28nm, 56nm]","V1|VINTn is a rectangular of sides = [28nm, 56nm, 28nm, 56nm]"
+Vn.2,36 nm,Minimum spacing of V1|VINTn (if runlength exactly 28nm) - Full alignment
+Vn.3,50 nm,Minimum spacing of V1|VINTn for runlength < 28nm
+Vn.4,none,"V1 must be inside M1 and MINT1, VINTn must be inside MINTn[A|B] and M(n+1)[A|B]"
+Vn.5,none,V1/VINTn shape must be rectangular if enclosing M1[A|B]/MINTn[A|B] wire width >= 60nm
+"MINTn LAYERS, n=2..6",,
+MINT.1,28 nm,MINTn[A|B] width minimum
+MINT.2,56 nm,One of two edges connected to the same vertex must have at least
+MINT.3,1800 nm,Maximum length of MINTn[A|B] for wires with min width (28nm)
+MINT.4,68 nm,MINTn[A|B] end-of-Line spacing (EOL edge defined as edge < 32nm)
+MINT.5,54 nm,MINTn[A|B] minimum space and notch
+MINT.6,36 nm,Minimum spacing of MINTnA to MINTnB
+MINT.7,44 nm,End-of-Line spacing of MINTnA to MINTnB (EOL edge defined as edge < 32nm)
+MINT.8,68 nm,Minimum spacing of MINTn[A|B] wider than 32 nm and longer than 240 nm
+MINT.9,76 nm,Minimum spacing of MINTn[A|B] wider than 40 nm and longer than 240 nm
+MINT.10,92 nm,Minimum spacing of MINTn[A|B] wider than 64 nm and longer than 480 nm
+MINT.11,120 nm,Minimum spacing of MINTn[A|B] wider than 120 nm and longer than 1.2 um
+MINT.12,240 nm,Minimum spacing of MINTn[A|B] wider than 240 nm and longer than 1.8 um
+MINT.13,320 nm,Minimum spacing of MINTn[A|B] wider than 320 nm and longer than 2.4 um
+MINT.14,600 nm,Minimum spacing of MINTn[A|B] wider than 600 nm and longer than 2.4 um
+MINT.15,44 nm,MINTn[A|B] minimum spacing to MINTn[B|A] wider than 32 nm and longer than 240 nm
+MINT.16,50 nm,MINTn[A|B] minimum spacing to MINTn[B|A] wider than 40 nm and longer than 240 nm
+MINT.17,60 nm,MINTn[A|B] minimum spacing to MINTn[B|A] wider than 64 nm and longer than 480 nm
+MINT.18,78 nm,MINTn[A|B] minimum spacing to MINTn[B|A] wider than 120 nm and longer than 1.2 um
+MINT.19,156 nm,MINTn[A|B] minimum spacing to MINTn[B|A] wider than 240 nm and longer than 1.8 um
+MINT.20,200 nm,MINTn[A|B] minimum spacing to MINTn[B|A] wider than 320 nm and longer than 2.4 um
+MINT.21,400 nm,MINTn[A|B] minimum spacing to MINTn[B|A] wider than 600 nm and longer than 2.4 um
+MINT.22,40 nm,Minimum overlap of MINTnA and MINTnB (stitch reagion length)
+MINT.23,"[28, 2, 28, 2]
+[32, 0, 32, 0]
+[10, 10, 10, 10]",Allowed enclosures of V(n-1) by MINTn[A|B]
+MINT.24,"[32, 2, 32, 2]
+[40, 0, 40, 0]
+[14, 14, 14, 14]",Allowed enclosures of V(n-1) by MINTn[A|B] on overlapping zone (stitch area)
+MINT.26,none,V(n-1) shape must be rectangular if enclosing MINTn[A|B] wire width >= 60nm
+MINT.27,0.0024 um2,MINTn[A|B] minimum area for rectangular shape
+MINT.28,0.0036 um2,MINTn[A|B] minimum area for non-rectangular shape
+VSMGn LAYERS,,
+VSMGn.1,none,VSMGn shape is a square or rectangle respecting VSMGn.1.a or VSMGn.1.b. VSMGn.1.b is mandatory when Vn is enclosed by [MSMGn|MSMG(n+1)] shapes with width >= 120nm.
+VSMGn.1.a,56 nm,VSMGn is a square with 56nm edge length
+VSMGn.1.b,"[56nm, 112nm]","VSMGn is a rectangular of sides = [56nm, 112nm, 56nm, 112nm]"
+VSMGn.2,72 nm,Minimum spacing of VSMGn (if runlength exactly 56nm) - Full alignment
+VSMGn.3,100 nm,Minimum spacing of VSMGn for runlength < 56nm
+VSMGn.4,none,VSMGn must be inside (MSMGn[A|B] and MSMG (n+1) ) or ( MSMG(n)[A|B] and MG1)
+VSMGn.5,none,VSMGn shape must be rectangular if enclosing (MSMGn[A|B] if n>1) wire width >= 80nm
+MSMGn LAYERS,,
+MSMGn.1,56 nm,MSMGn width
+MSMGn.2,112 nm,One of two edges connected to the same vertex must have at least
+MSMGn.3,1.920 um,Maximum length of MSMGn for wires with min width (56nm)
+MSMGn.4,136 nm,MSMGn end-of-Line spacing (EOL edge defined as edge < 64nm)
+MSMGn.5,56nm,MSMGn minimum space and notch
+MSMGn.6,92 nm,Minimum spacing of MSMGn wider than 64 nm and longer than 480nm
+MSMGn.7,120 nm,Minimum spacing of MSMGn wider than 120 nm and longer than 1.2 um
+MSMGn.8,240 nm,Minimum spacing of MSMGn wider than 240 nm and longer than 1.8 um
+MSMGn.9,320 nm,Minimum spacing of MSMGn wider than 320 nm and longer than 2.4 um
+MSMGn.10,600 nm,Minimum spacing of MSMGn wider than 600 nm and longer than 2.4 um
+MSMGn.11,"[28, 2, 28, 2]
+[32, 0, 32, 0]
+[10, 10, 10, 10]",Allowed enclosures of VSMG(n-1) by MSMGn
+MSMGn.12,none,VSMG(n-1) center must be aligned to wire center (between the 2 longest edges)
+MSMGn.13,none,VSMG(n-1) shape must be rectangular if enclosing wire width >= 120nm
+MSMGn.14,0.0024 um2,MSMGn minimum area for rectangular shape
+MSMGn.15,0.0036 um2,MSMGn minimum area for non-rectangular shape
+VGn LAYERS,,
+VG1.1,none,VG1 shape is a square or rectangle respecting VG1.1.a or VG1.1.b. VG1.1.b is mandatory when VG1n is enclosed by [MGn|MG(n+1)] shapes with width >= 240nm.
+VG1.1.a,112 nm,VG1 is a square with 112nm edge length
+VG1.1.b,"[112nm, 224nm]","VG1 is a rectangular of sides = [112nm, 224nm, 112nm, 224nm]"
+VG1.2,144 nm,Minimum spacing of VG1 (if runlength exactly 112nm) - Full alignment
+VG1.3,200 nm,Minimum spacing of VG1 for runlength < 112nm
+VG1.4,none,VG1 must be inside (MGn[A|B] and MG(n+1)[A|B])
+VG1.5,none,"VG1 shape must be rectangular if enclosing (MGn[A|B] if n>1, or MSMG5[A|B] if n=1) wire width >= 160nm"
+MGn LAYERS,,
+MGn.1,112 nm,MGn width
+MGn.2,224nm,One of two edges connected to the same vertex must have at least
+MGn.3,3.840 um,Maximum length of MGn for wires with min width (112nm)
+MGn.4,272 nm,MGn end-of-Line spacing (EOL edge defined as edge < 128nm)
+MGn.5,112nm,MGn minimum space and notch
+MGn.6,120 nm,Minimum spacing of MGn wider than 120 nm and longer than 1.2 um
+MGn.7,240 nm,Minimum spacing of MGn wider than 240 nm and longer than 1.8 um
+MGn.8,320 nm,Minimum spacing of MGn wider than 320 nm and longer than 2.4 um
+MGn.9,600 nm,Minimum spacing of MGn wider than 600 nm and longer than 2.4 um
+MGn.10,0 nm,Allowed enclosures of VGn by MGn
+MGn.11,none,VSMGn center must be aligned to wire center (between the 2 longest edges)
+MGn.12,none,VSMGn shape must be rectangular if enclosing wire width >= 160nm
+MGn.13,0.0024 um2,MGn minimum area for rectangular shape
+MGn.14,0.0036 um2,MGn minimum area for non-rectangular shape
+Other Rules,,
+GRID,0.5 nm,Shapes on all layers must be on a 0.5 nm grid
+ANTENNA,100:01:00,Ratio of Maximum Allowed (GATE[A|B] or Metal Layer Area) to transistor Gate Area

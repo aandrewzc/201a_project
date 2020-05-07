@@ -1,0 +1,96 @@
+﻿Rule,Value,Description
+POLY LAYER,,
+POLY.1,50 nm,Minimum width of poly
+POLY.2,140 nm,Minimum spacing of poly AND active
+POLY.3,55 nm,Minimum poly extension beyond active
+POLY.4,70 nm,Minimum enclosure of active around gate
+POLY.5,50 nm,Minimum spacing of field poly to active
+POLY.6,75 nm,Minimum Minimum spacing of field poly
+WELL LAYER,,
+WELL.1,none,saveDerived: nwell/pwell must not overlap
+WELL.2,225 nm,Minimum spacing of nwell/pwell at different potential
+WELL.3,135 nm,Minimum spacing of nwell/pwell at the same potential
+WELL.4,200 nm,Minimum width of nwell/pwell
+IMPLANT LAYER,,
+IMPLANT.1,70 nm,Minimum spacing of nimplant/ pimplant to channel
+IMPLANT.2,25 nm,Minimum spacing of nimplant/ pimplant to contact
+IMPLANT.3/4,45 nm,Minimum width/ spacing of nimplant/ pimplant
+IMPLANT.5,none,Nimplant and pimplant must not overlap
+ACTIVE LAYER,,
+ACTIVE.1,90 nm,Minimum width of active
+ACTIVE.2,80 nm,Minimum spacing of active
+ACTIVE.3,55 nm,Minimum enclosure/spacing of nwell/pwell to active
+ACTIVE.4,none,saveDerived: active must be inside nwell or pwell
+CONTACT LAYER,,
+CONTACT.1,65 nm,Minimum width of contact
+CONTACT.2,75 nm,Minimum spacing of contact
+CONTACT.3,none,saveDerived: contact must be inside active or poly or metal1
+CONTACT.4,5 nm,Minimum enclosure of active around contact
+CONTACT.5,5 nm,Minimum enclosure of poly around contact
+CONTACT.6,35 nm,Minimum spacing of contact and gate
+CONTACT.7,90 nm,Minimum spacing of contact and poly
+METAL1 LAYER,,
+METAL1.1,65 nm,Minimum width of metal1
+METAL1.2,65 nm,Minimum spacing of metal1
+METAL1.3,35 nm,Minimum enclosure around contact on two opposite sides
+METAL1.4,35 nm,Minimum enclosure around via1 on two opposite sides
+METAL1.5,90 nm,Minimum spacing of metal wider than 90 nm and longer than 900 nm
+METAL1.6,270 nm,Minimum spacing of metal wider than 270 nm and longer than 300 nm
+METAL1.7,500 nm,Minimum spacing of metal wider than 500 nm and longer than 1.8um
+METAL1.8,900 nm,Minimum spacing of metal wider than 900 nm and longer than 2.7 um
+METAL1.9,1500 nm,Minimum spacing of metal wider than 1500 nm and longer than 4.0 um
+VIA1 LAYER,,
+VIA1.1,65 nm,Minimum width of via1
+VIA1.2,75 nm,Minimum spacing of via1
+VIA1.3,none,saveDerived: via1 must be inside metal1
+VIA1.4,none,saveDerived: via1 must be inside metal2
+METALINT LAYERS,,
+METALINT.1,70 nm,Minimum width of intermediate metal
+METALINT.2,70 nm,Minimum spacing of intermediate metal
+METALINT.3,35 nm,Minimum enclosure around via1 on two opposite sides
+METALINT.4,35 nm,Minimum enclosure around via[2-3] on two opposite sides
+METALINT.5,90 nm,Minimum spacing of metal wider than 90 nm and longer than 900 nm
+METALINT.6,270 nm,Minimum spacing of metal wider than 270 nm and longer than 300 nm
+METALINT.7,500 nm,Minimum spacing of metal wider than 500 nm and longer than 1.8um
+METALINT.8,900 nm,Minimum spacing of metal wider than 900 nm and longer than 2.7 um
+METALINT.9,1500 nm,Minimum spacing of metal wider than 1500 nm and longer than 4.0 um
+VIA[2-3] LAYERS,,
+VIA[2-3].1,70 nm,Minimum width of Via[2-3]
+VIA[2-3].2,85 nm,Minimum spacing of Via[2-3]
+VIA[2-3].3,none,saveDerived: Via[2-3] must be inside metal[2-3]
+VIA[2-3].4,none,saveDerived: Via[2-3] must be inside metal[3-4]
+METALSMG LAYER,,
+METALSMG.1,140 nm,Minimum width of semi-global metal
+METALSMG.2,140 nm,Minimum spacing of semi-global metal
+METALSMG.3,0 nm,Minimum enclosure around via[3-6] on two opposite sides
+METALSMG.6,270 nm,Minimum spacing of metal wider than 270 nm and longer than 300 nm
+METALSMG.7,500 nm,Minimum spacing of metal wider than 500 nm and longer than 1.8um
+METALSMG.8,900 nm,Minimum spacing of metal wider than 900 nm and longer than 2.7 um
+VIA[4-6] LAYERS,,
+VIA[4-6].1,140 nm,Minimum width of Via[4-6]
+VIA[4-6].2,160nm,Minimum spacing of Via[4-6]
+VIA[4-6].3,none,saveDerived: Via[4-6] must be inside metal[4-6]
+VIA[4-6].4,none,saveDerived: Via[4-6] must be inside metal[5-7]
+METALTNG LAYER,,
+METALTNG.1,400 nm,Minimum width of metalTNG
+METALTNG.2,400 nm,Minimum spacing of metalTNG
+METALTNG.3,0 nm,Minimum enclosure around via[6-8] on two opposite sides
+METALTNG.4,(20000 nm)^2,Minimum area of metalTNG straddling via[6-8]
+METALTNG.5,90 nm,Minimum spacing of metal wider than 90 nm and longer than 900 nm
+METALTNG.6,270 nm,Minimum spacing of metal wider than 270 nm and longer than 300 nm
+VIA[7-8] LAYERS,,
+VIA[7-8].1,400 nm,Minimum width of via[7-8]
+VIA[7-8].2,440 nm,Minimum spacing of via[7-8]
+VIA[7-8].3,none,saveDerived: via[7-8] must be inside metal[7-8]
+VIA[7-8].4,none,saveDerived: via[7-8] must be inside metal[8-9]
+METALG LAYER,,
+METALG.1,800 nm,Minimum width of global metal
+METALG.2,800 nm,Minimum spacing of global metal
+METALG.3,0 nm,Minimum enclosure around via[8-9] on two opposite sides
+METALG.8,900 nm,Minimum spacing of metal wider than 900 nm and longer than 2.7 um
+METALG.9,1500 nm,Minimum spacing of metal wider than 1500 nm and longer than 4.0 um
+VIA[9] LAYER,,
+VIA[9].1,800 nm,Minimum width of via9
+VIA[9].2,880 nm,Minimum spacing of via9
+VIA[9].3,none,saveDerived: via9 must be inside metal9
+VIA[9].4,none,saveDerived: via9 must be inside metal10
