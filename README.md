@@ -1,5 +1,5 @@
-201A VLSI Design Automation Project
+## 201A VLSI Design Automation Project
 
-Design Rule Matching 
+### Design Rule Matching 
 
 Natural Language Processing Approach
