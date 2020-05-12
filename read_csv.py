@@ -1,96 +1,88 @@
 import os
 import csv
 
-def read_csv(search_dir='.'):
-    # get .csv files
-    csv_files = [f for f in os.listdir(search_dir) if ".csv" in f]
+def read_csv(rule_file):
+    rules = dict()
+    layer = ""
+    rules["name"] = rule_file.split('.')[0]
 
-    rule_set = []
+    # open csv file for rule extraction
+    with open(rule_file, newline='') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',')
 
-    for rule_file in csv_files:
-        rule_list = dict()
-        layer = ""
-        rule_list["name"] = rule_file.split('.')[0]
+        # read file line by line
+        for row in reader:
 
-        with open(rule_file, newline='') as csvfile:
-            reader = csv.reader(csvfile, delimiter=',')
-            for row in reader:
-                if row[1] == "":
-                    layer = row[0]
-                    rule_list[layer] = []
-                elif layer in rule_list.keys():
-                    rule_list[layer].append(row)
-        
-        rule_set.append(rule_list)
+            # lines defining layer names have only one value
+            if row[1] == "":
+                # sort rules in a dict by their layer
+                layer = row[0]
+                rules[layer] = []
 
+            # add each rule to the current layer
+            elif layer in rules.keys():
+                rules[layer].append(row)
+    
+    # print results
     debug = False
     if (debug):
-        for rule_list in rule_set:
-            for key in rule_list.keys():
-                if key == "name":
-                    print("*******************************************")
-                    print(rule_list[key])
-                    print("*******************************************")
-                else:
-                    print(key)
-                    for rule in rule_list[key]:
-                        print("\t %s, %s, %s" % (rule[0], rule[1], rule[2]))
+        for key in rules.keys():
+            if key == "name":
+                print("*******************************************")
+                print(rules[key])
+                print("*******************************************")
+            else:
+                print(key)
+                for rule in rules[key]:
+                    print("\t %s, %s, %s" % (rule[0], rule[1], rule[2]))
 
-    pdk15_csv = dict()
-    pdk45_csv = dict()
-
-    for rule_list in rule_set:
-        name =  rule_list["name"]
-        if "15" in name:
-            pdk15_csv = rule_list
-        elif "45" in name:
-            pdk45_csv = rule_list
-
-    return [pdk15_csv, pdk45_csv]
+    return rules
 
 
-def read_rul(search_dir='.'):
-    rul_files = [f for f in os.listdir(search_dir) if ".rul" in f]
+def read_rul(rule_file):
+    rules = []
+    curr_rule = ""
+    build_rule = False
 
-    for filename in rul_files:
-        rules = []
+    # open file and read line by line
+    with open(rule_file) as f:
+        for line in f:
+            # ignore comments
+            if "//" in line:
+                continue
 
-        curr_rule = ""
-        build_rule = False
+            # '{' indicates start of a rule
+            if "{" in line:
+                build_rule = True
+            
+            if build_rule:
+                curr_rule += line
 
-        print(filename)
-        with open(filename) as f:
-            for line in f:
-                if "//" in line:
-                    continue
+            # '}' indicates the end of a rule
+            if "}" in line:
+                build_rule = False
+                rules.append(curr_rule)
+                curr_rule = ""
 
-                if "{" in line:
-                    build_rule = True
-                
-                if build_rule:
-                    curr_rule += line
-
-                if "}" in line:
-                    build_rule = False
-                    rules.append(curr_rule)
-                    curr_rule = ""
-
-        print(len(rules))
+    return rules
 
 
 
 if __name__ == "__main__":
-    set1, set2 = read_csv()
-    print(set1['name'])
-    total = 0
-    for key in set1.keys():
-        total += len(set1[key])
-    print(total)
+    csv_files = [f for f in os.listdir('.') if ".csv" in f]
+    rul_files = [f for f in os.listdir('.') if ".rul" in f]
 
-    print(set2['name'])
-    total = 0
-    for key in set2.keys():
-        total += len(set2[key])
-    print(total)
+    pdk15_csv = read_csv("calibreDRC_15.csv")
+    pdk45_csv = read_csv("calibreDRC_45.csv")
 
-    read_rul()
+    pdk15_rul = read_rul("calibreDRC_15.rul")
+    pdk45_rul = read_rul("calibreDRC_45.rul")
+
+    print(pdk45_rul[0].strip().split('{'))
+    print(pdk15_rul[0].strip())
+
+    for key in pdk45_csv.keys():
+        print(key)
+
+    for key in pdk15_csv.keys():
+        print(key)

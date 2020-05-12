@@ -14,3 +14,5 @@ diff2 = np.array(k.emb('metal1')) - np.array(k.emb('layer'))
 
 print(np.abs(np.mean(diff1)))
 print(np.abs(np.mean(diff2)))
+
+
