@@ -1,7 +1,7 @@
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 
-from read_csv import read_csv, read_rul
+from read_rules import read_csv, read_rul
 
 # ratio
 # partial_ratio
