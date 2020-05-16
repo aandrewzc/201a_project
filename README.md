@@ -14,10 +14,15 @@ Keywords:
 Approach
 - CSV = Layer,,
 		Rule, value, description
-- RUL = Name { 
-			@description
-			rule
-		}
+- RUL file yields list of rules
+	```
+	rule = dict {	name = ""
+					description = ["line1", "line2",...]
+				   	rule = ["line1", ...]
+					layer = ""
+				  	embedding = []
+				  }
+	```
 
 - read rules
 - sort rules into layers

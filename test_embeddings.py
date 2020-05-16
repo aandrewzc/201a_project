@@ -8,8 +8,8 @@ k = KazumaCharEmbedding()
 
 for w in ['metal1', 'm1', 'METAL1']:
     print('embedding {}'.format(w))
-    # print(g.emb(w))
-    # print(k.emb(w))
+    print(len(g.emb(w)))
+    print(len(k.emb(w)))
 
 diff1 = np.array(k.emb('metal1')) - np.array(k.emb('METAL1'))
 diff2 = np.array(k.emb('metal1')) - np.array(k.emb('layer'))

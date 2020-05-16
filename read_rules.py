@@ -41,28 +41,46 @@ def read_csv(rule_file):
 
 def read_rul(rule_file):
     rules = []
-    curr_rule = ""
+    curr_rule = dict()
+    description = []
+    value = []
     build_rule = False
 
     # open file and read line by line
     with open(rule_file) as f:
         for line in f:
+            temp = line.strip()
+
             # ignore comments
-            if "//" in line:
+            if not temp or temp[0:2] == "//":
                 continue
 
+            temp = temp.split('//')[0].strip()  #in case of same line comments of form "rule_name{ //comment"
+
             # '{' indicates start of a rule
-            if "{" in line:
+            if temp[-1] == "{":
                 build_rule = True
-            
-            if build_rule:
-                curr_rule += line
+                curr_rule['name'] = line.split('{')[0].strip()  # extract rule name
 
             # '}' indicates the end of a rule
-            if "}" in line:
+            elif temp[0] == "}":
                 build_rule = False
+
+                # save current rule
+                curr_rule['rule'] = value
+                curr_rule['description'] = description
                 rules.append(curr_rule)
-                curr_rule = ""
+                
+                # initialize the next rule
+                curr_rule = dict()
+                value = []
+                description = []
+
+            elif build_rule:
+                if "@" in line:
+                    description.append( line.split('@')[1].strip() ) # description is text after the @ symbol
+                else:
+                    value.append( line.strip() )  # get rule value
 
     return rules
 
@@ -78,11 +96,11 @@ if __name__ == "__main__":
     pdk15_rul = read_rul("calibreDRC_15.rul")
     pdk45_rul = read_rul("calibreDRC_45.rul")
 
-    print(pdk45_rul[0].strip().split('{'))
-    print(pdk15_rul[0].strip())
-
     for key in pdk45_csv.keys():
         print(key)
 
     for key in pdk15_csv.keys():
         print(key)
+    
+    print(pdk45_rul[2])
+    print(pdk15_rul[0])
