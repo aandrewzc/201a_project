@@ -2,9 +2,13 @@ import os
 import csv
 
 def read_csv(rule_file):
-    rules = dict()
-    layer = ""
-    rules["name"] = rule_file.split('.')[0]
+    rules = []
+    layers = []
+
+    curr_rule = dict() 
+    curr_layer = ""
+    description = ""
+    value = ""
 
     # open csv file for rule extraction
     with open(rule_file, newline='') as csvfile:
@@ -15,28 +19,19 @@ def read_csv(rule_file):
 
             # lines defining layer names have only one value
             if row[1] == "":
-                # sort rules in a dict by their layer
-                layer = row[0]
-                rules[layer] = []
+                curr_layer = row[0].split('LAYER')[0].strip()
+                layers.append(curr_layer)
 
             # add each rule to the current layer
-            elif layer in rules.keys():
-                rules[layer].append(row)
-    
-    # print results
-    debug = False
-    if (debug):
-        for key in rules.keys():
-            if key == "name":
-                print("*******************************************")
-                print(rules[key])
-                print("*******************************************")
-            else:
-                print(key)
-                for rule in rules[key]:
-                    print("\t %s, %s, %s" % (rule[0], rule[1], rule[2]))
+            elif curr_layer in layers:
+                curr_rule['name'] = row[0]
+                curr_rule['value'] = row[1]
+                curr_rule['description'] = row[2]
+                curr_rule['layer'] = curr_layer
+                rules.append(curr_rule)
+                curr_rule = dict() 
 
-    return rules
+    return rules, layers
 
 
 def read_rul(rule_file):
