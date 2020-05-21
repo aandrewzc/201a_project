@@ -5,11 +5,17 @@ from read_rules import read_rul, read_csv
 
 g = GloveEmbedding('common_crawl_840', d_emb=300, show_progress=True)
 k = KazumaCharEmbedding()
+c = ConcatEmbedding([g,k])
 
-for w in ['metal1', 'm1', 'METAL1']:
+for w in ['metal1', 'metal', 'M', 'EXT', '<', '0.035']:
     print('embedding {}'.format(w))
-    print(len(g.emb(w)))
-    print(len(k.emb(w)))
+    word = g.emb(w)
+    if None in word:
+        print("\tbad embedding")
+    else:
+        print("\tgood embedding")
+    # print(k.emb(w))
+
 
 diff1 = np.array(k.emb('metal1')) - np.array(k.emb('METAL1'))
 diff2 = np.array(k.emb('metal1')) - np.array(k.emb('layer'))

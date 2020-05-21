@@ -1,6 +1,10 @@
 import os
 import csv
 
+# use to mask away numbers for counting words
+NUMBER_REPLACEMENT = "number-value"
+
+
 def read_csv(rule_file):
     rules = []
     layers = []
@@ -34,12 +38,15 @@ def read_csv(rule_file):
     return rules, layers
 
 
-def read_rul(rule_file):
+def read_rul(rule_file, count_words=False):
     rules = []
     curr_rule = dict()
     description = []
     value = []
     build_rule = False
+
+    if count_words:
+        word_counts = dict()
 
     # open file and read line by line
     with open(rule_file) as f:
@@ -73,11 +80,30 @@ def read_rul(rule_file):
 
             elif build_rule:
                 if "@" in line:
-                    description.append( line.split('@')[1].strip() ) # description is text after the @ symbol
+                    x = line.split('@')[1].strip()  # description is text after the @ symbol
+                    description.append(x) 
                 else:
-                    value.append( line.strip() )  # get rule value
+                    x = line.strip()  # get rule value
+                    value.append(x)
 
-    return rules
+                if count_words:
+                    words = x.split(' ')
+                    for w in words:
+                        if w.replace('.','',1).isdigit():
+                            w = NUMBER_REPLACEMENT
+
+                        if w in word_counts.keys():
+                            word_counts[w] += 1
+                        else:
+                            word_counts[w] = 1
+
+    if count_words:
+        word_counts['total-words'] = len(word_counts.keys())
+        output = (rules, word_counts)
+    else:
+        output = (rules, None)
+
+    return output
 
 
 

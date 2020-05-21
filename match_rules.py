@@ -1,30 +1,82 @@
 import numpy as np
 import csv
 
-from embeddings import KazumaCharEmbedding
+from embeddings import GloveEmbedding, KazumaCharEmbedding
 from fuzzywuzzy import fuzz, process
 from read_rules import read_csv, read_rul
 
+# global variables
+NUMBER_REPLACEMENT = "number-value"
+EMBEDDING_SIZE = 100
+
+g = GloveEmbedding('common_crawl_840', d_emb=300, show_progress=True)
+k = KazumaCharEmbedding()
+a = 0.001
+
 
 def similarity(s1, s2):
-    return np.dot(s1,s2) / (np.linalg.norm(s1)*np.linalg.norm(s2))
+    # euclidean = np.linalg.norm(s1-s2)
+    cos_sim = np.dot(s1,s2) / (np.linalg.norm(s1) * np.linalg.norm(s2))
+    return cos_sim
 
 
-def embed_sentence(sentence, embedding):
+def embed_sentence(sentence, word_counts=None):
     words = sentence.split(' ')
     num_words = len(words)
-    embedding_size = len(embedding.emb(''))  #100
-    total = np.zeros(embedding_size)
+    total = np.zeros(EMBEDDING_SIZE)
 
     for i in range(num_words):
-        embed = np.array( embedding.emb(words[i].strip()) )
+        w = words[i].strip()
+
+        # remove numbers
+        if w.replace('.','',1).isdigit():
+            w = NUMBER_REPLACEMENT
+
+        embed = np.array( k.emb(w) )
+        if word_counts:
+            prob = word_counts[w]/word_counts['total-words']
+            weight = a / (a+prob)
+            embed = weight*embed
+
         total += embed
         
     result = total / num_words
     return result
 
 
-def match_layers(list1, list2, threshold):
+def embed_rules(pdk, word_counts=None):
+    N = len(pdk)
+    w1 = 1
+    w2 = 1
+
+    result = np.zeros((N, EMBEDDING_SIZE))
+    for i in range(N):
+        vec_rule = embed_sentence(' '.join(pdk[i]['rule']), word_counts)
+        vec_desc = embed_sentence(' '.join(pdk[i]['description']), word_counts)
+        result[i,:] = w1*vec_rule + w2*vec_desc 
+    return result
+
+
+def match_rules(embed1, pdk1, embed2, pdk2):
+    N1 = embed1.shape[0]
+    N2 = embed2.shape[0]
+
+    matches = dict()
+    for i in range(N1):
+        s = np.zeros(N2)
+        for j in range(N2):
+            s[j] = similarity(embed1[i,:], embed2[j,:])
+            # if s[i] > 0.95:
+            #     print(pdk2_rul[i]['rule'], s[i])
+
+        index = np.argmax(s)
+        matches[pdk1[i]['name']] = pdk2[index]['name']
+        # print(pdk1[i]['name'], pdk2[index]['name'])
+
+    return matches
+
+
+def pair_layers(list1, list2, threshold):
     final_pairs = []
     scorer = fuzz.ratio
 
@@ -124,54 +176,62 @@ def add_csv_data(rul_file, csv_file, ground_truth):
     return
 
 
+def check_matches(matches, match_file):
+    total = 0
+    n = len(matches)
+    with open(match_file, newline='') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',')
+        for row in reader:
+            key = row[0]
+            values = row[1:]
+            if matches[key] in values:
+                total += 1
+                print(key, matches[key])
+    
+    return total/n
+
+
 def main():
-    k = KazumaCharEmbedding()
+    weighted_avg = False
 
     # import rules
+    print("reading rules...")
     pdk1_csv, layers1 = read_csv("calibreDRC_15.csv")
     pdk2_csv, layers2 = read_csv("calibreDRC_45.csv")
-    pdk1_rul = read_rul("calibreDRC_15.rul")
-    pdk2_rul = read_rul("calibreDRC_45.rul")
+    pdk1_rul, word_count1 = read_rul("calibreDRC_15.rul", weighted_avg)
+    pdk2_rul, word_count2 = read_rul("calibreDRC_45.rul", weighted_avg)
+    print("rules stored.")
 
     N1 = len(pdk1_rul)
     N2 = len(pdk2_rul)
 
-    pairs = match_layers(layers1, layers2, 50)
-    print(pairs)
+    # pairs = pair_layers(layers1, layers2, 50)
+    # print(pairs)
 
-    with open('15.csv', 'w') as f:
-        names = [ pdk1_rul[i]['name'] for i in range(N1) ]
-        for n in names:
-            f.write(n+'=\n')
-
-    with open('45.csv', 'w') as f:
-        names = [ pdk2_rul[i]['name'] for i in range(N2) ]
-        for n in names:
-            f.write(n+'=\n')
-
-    add_csv_data(pdk1_rul, pdk1_csv, 'csv-rul-matchings-1.csv')
+    # add_csv_data(pdk1_rul, pdk1_csv, 'csv-rul-matchings-1.csv')
     # add_csv_data(pdk2_rul, pdk2_csv, 'csv-rul-matchings-2.csv')
 
     # generate and store rule embeddings
     print("generating rule embeddings...")
-    for rule in pdk1_rul:
-        rule['embedding'] = embed_sentence('\n'.join(rule['rule']), k)
-    for rule in pdk2_rul:
-        rule['embedding'] = embed_sentence('\n'.join(rule['rule']), k)
-    print("embeddings stored...")
+    embed1 = embed_rules(pdk1_rul, word_count1)
+    embed2 = embed_rules(pdk2_rul, word_count2)
+    print("embeddings stored.")
 
-    # e = pdk1_rul[144]['embedding']
-    # N = len(pdk2_rul)
-    # s = np.zeros(N)
-    # for i in range(N):
-    #     s[i] = similarity(e, pdk2_rul[i]['embedding'])
-    #     if s[i] > 0.95:
-    #         print(pdk2_rul[i]['rule'], s[i])
+    # match rules
+    print("matching pdk15 to pdk45...")
+    matches = match_rules(embed1, pdk1_rul, embed2, pdk2_rul)
+    print("rules matched.")
 
-    # index = np.argmax(s)
-    # print(pdk1_rul[144]['rule'], pdk2_rul[index]['rule'] )
+    score = check_matches(matches, "15to45.csv")
+    print(score)
 
-    # r = pdk2_rul[24]['rule'][0]
+    print("matching pdk45 to pdk15...")
+    matches = match_rules(embed2, pdk2_rul, embed1, pdk1_rul)
+    print("rules matched.")
+
+    score = check_matches(matches, "45to15.csv")
+    print(score)
+
 
 
 if __name__ == "__main__":

@@ -12,18 +12,16 @@ Keywords:
 - semantic similarity between sentences
 
 Approach
-- CSV = Layer,,
-		Rule, value, description
-- RUL file yields list of rules
+- .rul file yields list of rules:
 	```
-	rule = dict {	name = ""
-					description = ["line1", "line2",...]
-				   	rule = ["line1", ...]
-					layer = ""
-				  	embedding = []
-				  }
+	rule = dict {
+				  'name' = "rule_name"
+				  'description' = ["line1", "line2",...]
+				  'rule' = ["line1", ...]
+				  'layer' = "layer_name"
+				  'embedding' = []
+				}
 	```
-
 - read rules
 - sort rules into layers
 	* label each rule with a layer (easy for csv hard for rul)
@@ -35,3 +33,14 @@ Approach
 - for each layer
 	- match rules between pdks
 		* use embeddings or matching techniques
+
+Ideas
+- Embeddings
+	* sentence embedding weighted sum using word probabilities
+	* include name, plain text, SVRF embeddings
+	* concatenate word and character embeddings
+	* ignore number values in embeddings (no information added)
+	* element wise maximum (max pooling)
+- Distance Calculation
+	* use Euclidean distance and cosine similarity
+	* element wise subtraction or multiplication then aggregate
