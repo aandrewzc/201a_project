@@ -44,3 +44,12 @@ Ideas
 - Distance Calculation
 	* use Euclidean distance and cosine similarity
 	* element wise subtraction or multiplication then aggregate
+
+
+Pre-Trained Models
+- Embeddings
+	* save path: ~/.embeddings
+- Universal Sentence Embeddings
+	* tensorflow_hub.load()
+- Sentence Transformers
+	* save path: ~/.cache/torch/sentence_transformers
