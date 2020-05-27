@@ -241,7 +241,7 @@ def main():
     
     # generate and store rule embeddings
     print("2. Generating rule embeddings...")
-    E = SentenceEmbedding("char")
+    E = SentenceEmbedding("bert")
 
     partial_embed1 = np.zeros((num_features, N1, E.size))
     partial_embed2 = np.zeros((num_features, N2, E.size))

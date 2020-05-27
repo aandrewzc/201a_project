@@ -68,6 +68,7 @@ class SentenceEmbedding:
         N = len(pdk)
 
         result = np.zeros((N, self.size))
+        sentences = []
         for i in range(N):
             # in case we embed a feature like name, which is not a list
             if isinstance(pdk[i][key], list):
@@ -75,13 +76,15 @@ class SentenceEmbedding:
             else: 
                 s = pdk[i][key]
 
+
             if self.type == "char" or self.type == "glove":
                 result[i,:] = self.embed_sentence(s, word_count, number_replacement)
+            else:
+                sentences.append(s)
 
-            elif self.type == "bert" or self.type == "bert-stsb":
-                result[i,:] = self.bertEmbed.encode(s)
-
-            elif self.type == "universal":
-                result[i,:] = self.univEmbed(s)
+        if self.type == "bert" or self.type == "bert-stsb":
+            result = np.array(self.bertEmbed.encode(sentences))
+        elif self.type == "universal":
+            result = np.array(self.univEmbed(sentences))
 
         return result
