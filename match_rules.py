@@ -1,10 +1,12 @@
 import numpy as np
 import csv
+import sys
 
 from sklearn.decomposition import TruncatedSVD
 from embeddings import GloveEmbedding, KazumaCharEmbedding
 from fuzzywuzzy import fuzz, process
 from read_rules import read_csv, read_rul
+from embed_rules import SentenceEmbedding
 
 # Global Variables
 NUMBER_REPLACEMENT = "NUMBER"
@@ -17,51 +19,16 @@ num_features = len(features)
 weighted_avg = True
 use_sif = True
 
-g = GloveEmbedding('common_crawl_840', d_emb=300, show_progress=True)
-k = KazumaCharEmbedding()
-a = 0.001
-
 
 ###############################################################################
 # similarity():
 # Returns the cosine similarity between two vectors
 ###############################################################################
 def similarity(s1, s2):
-    # euclidean = np.linalg.norm(s1-s2)
-    cos_sim = np.dot(s1,s2) / (np.linalg.norm(s1) * np.linalg.norm(s2))
-    return cos_sim
+    return np.dot(s1,s2) / (np.linalg.norm(s1) * np.linalg.norm(s2))
 
-
-###############################################################################
-# embed_sentence():
-# Returns an embedding for the provided sentence
-# If word_counts != None, computes a weighted average of the word embeddings
-###############################################################################
-def embed_sentence(sentence, word_counts, replace_nums):
-    words = sentence.split(' ')
-    num_words = len(words)
-    total = np.zeros(EMBEDDING_SIZE)
-
-    for i in range(num_words):
-        w = words[i].strip()
-
-        # remove numbers
-        if replace_nums and w.replace('.','',1).isdigit():
-            w = NUMBER_REPLACEMENT
-            print(w)
-
-        char_embed = k.emb(w)
-        embed = np.array(char_embed)
-        
-        if word_counts and w in word_counts.keys():
-            prob = word_counts[w]/word_counts['total-words']
-            weight = a / (a+prob)
-            embed = weight*embed
-
-        total += embed
-        
-    result = total / num_words
-    return result
+def euclidean(s1, s2):
+    return np.linalg.norm(s1-s2)
 
 
 ###############################################################################
@@ -93,31 +60,6 @@ def remove_pc(X,npc=1):
     else:
         XX = X - X.dot(pc.transpose()).dot(pc)
     return XX
-
-
-###############################################################################
-# embed_key():
-# Returns a matrix of sentence embeddings for the designated key
-# Parameters:
-#   - pdk: list of rules, each rule is dictionary with rule text
-#   - key: the specific rule feature to embed
-#   - word_count: dictionary of word counts in the original file
-#   - replace_nums: flag designating if numbers should be ignored
-###############################################################################
-def embed_key(pdk, key, word_count, replace_nums=True):
-    N = len(pdk)
-
-    result = np.zeros((N, EMBEDDING_SIZE))
-    for i in range(N):
-        # in case we embed a feature like name, which is not a list
-        if isinstance(pdk[i][key], list):
-            s = ' '.join(pdk[i][key])
-        else: 
-            s = pdk[i][key]
-        vec_rule = embed_sentence(s, word_count, replace_nums)
-        result[i,:] = vec_rule
-
-    return result
 
 
 ###############################################################################
@@ -270,6 +212,8 @@ def check_matches(matches, match_file):
 
 
 def main():
+    print(len(sys.argv))
+
     print("----------Parameters----------")
     print("NUMBER_REPLACEMENT: %s" % NUMBER_REPLACEMENT)
     print("EMBEDDING_SIZE = %d" % EMBEDDING_SIZE)
@@ -294,16 +238,17 @@ def main():
 
     # add_csv_data(pdk1_rul, pdk1_csv, 'csv-rul-matchings-15.csv')
     # add_csv_data(pdk2_rul, pdk2_csv, word_count2, 'csv-rul-matchings-45.csv')
-
-
+    
     # generate and store rule embeddings
     print("2. Generating rule embeddings...")
-    partial_embed1 = np.zeros((num_features, N1, EMBEDDING_SIZE))
-    partial_embed2 = np.zeros((num_features, N2, EMBEDDING_SIZE))
+    E = SentenceEmbedding("char")
+
+    partial_embed1 = np.zeros((num_features, N1, E.size))
+    partial_embed2 = np.zeros((num_features, N2, E.size))
 
     for i in range(num_features):
-        result1 = embed_key(pdk1_rul, features[i], word_count1)
-        result2 = embed_key(pdk2_rul, features[i], word_count2)
+        result1 = E.embed_key(pdk1_rul, features[i], word_count1, NUMBER_REPLACEMENT)
+        result2 = E.embed_key(pdk2_rul, features[i], word_count2, NUMBER_REPLACEMENT)
 
         # remove first principle component
         if use_sif:

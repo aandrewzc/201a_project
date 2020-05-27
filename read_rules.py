@@ -1,6 +1,6 @@
 import os
 import csv
-
+import re
 
 def read_csv(rule_file):
     rules = []
@@ -60,7 +60,25 @@ def read_rul(rule_file, number_replacement, count_words=False):
             # '{' indicates start of a rule
             if temp[-1] == "{":
                 build_rule = True
-                curr_rule['name'] = line.split('{')[0].strip()  # extract rule name
+                name = line.split('{')[0].strip()  # extract rule name
+                curr_rule['name'] = name
+
+                # set the layer name, assuming format of: "Metal1.2", "RULE_M1002", or "RULE_MIS01"
+                # layer is before a dot, before a three digit rule number, or before a two digit rule number
+                if "." in name:
+                    curr_rule['layer'] = name.split('.')[0]
+                elif "_" in name:
+                    temp = name.split('_')[1]
+                    rule_num = re.search('[0-9][0-9][0-9][A-Za-z]*$', temp)
+                    if rule_num:
+                        temp2 = rule_num.group(0)
+                        curr_rule['layer'] = temp.split(temp2)[0]
+                    else:
+                        rule_num = re.search('[0-9][0-9][A-Za-z]*$', temp)
+                        if rule_num:
+                            temp2 = rule_num.group(0)
+                            curr_rule['layer'] = temp.split(temp2)[0]
+                # otherwise don't set a layer
 
             # '}' indicates the end of a rule
             elif temp[0] == "}":

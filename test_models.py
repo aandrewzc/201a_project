@@ -16,6 +16,7 @@ sentences = ["INTERNAL M1 < 0.028",
 sentences = np.array(sentences)
 
 # url = "https://tfhub.dev/google/universal-sentence-encoder/4"
+# url="./universal-sentence-encoder_4"
 # model1 = hub.load(url)
 # universalEncoder = model1(sentences)
 # universalEncoder = np.array(universalEncoder)
@@ -24,7 +25,12 @@ sentences = np.array(sentences)
 
 from sentence_transformers import SentenceTransformer
 
-model2 = SentenceTransformer('bert-base-nli-mean-tokens')
+try:
+    model2 = SentenceTransformer('./bert-base-nli-mean-tokens')
+except:
+    print("ERROR: make sure model is downloaded to working directory")
+    exit(0)
+
 sentenceBert = model2.encode(sentences)
 sentenceBert = np.array(sentenceBert)
 print(sentenceBert.shape)
