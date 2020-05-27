@@ -28,8 +28,8 @@ a = 0.001
 ###############################################################################
 def similarity(s1, s2):
     # euclidean = np.linalg.norm(s1-s2)
-    cos_dist = 1 - ( np.dot(s1,s2) / (np.linalg.norm(s1) * np.linalg.norm(s2)) )
-    return cos_dist
+    cos_sim = np.dot(s1,s2) / (np.linalg.norm(s1) * np.linalg.norm(s2))
+    return cos_sim
 
 
 ###############################################################################
@@ -293,9 +293,8 @@ def main():
     # print(pairs)
 
     # add_csv_data(pdk1_rul, pdk1_csv, 'csv-rul-matchings-15.csv')
-    add_csv_data(pdk2_rul, pdk2_csv, word_count2, 'csv-rul-matchings-45.csv')
+    # add_csv_data(pdk2_rul, pdk2_csv, word_count2, 'csv-rul-matchings-45.csv')
 
-    return
 
     # generate and store rule embeddings
     print("2. Generating rule embeddings...")
