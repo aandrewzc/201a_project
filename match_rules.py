@@ -2,23 +2,11 @@ import numpy as np
 import csv
 import sys
 
-from sklearn.decomposition import TruncatedSVD
 from embeddings import GloveEmbedding, KazumaCharEmbedding
 from fuzzywuzzy import fuzz, process
 from read_rules import read_csv, read_rul
-from embed_rules import SentenceEmbedding
-
-# Global Variables
-NUMBER_REPLACEMENT = "NUMBER"
-EMBEDDING_SIZE = 100
-THRESHOLD = 0.25
-WEIGHTS = [0.5, 1]
-features = ['rule', 'description']
-num_features = len(features)
-
-weighted_avg = True
-use_sif = True
-
+from embed_rules import SentenceEmbedding, joint_embedding
+from tabulate import tabulate
 
 ###############################################################################
 # similarity():
@@ -32,63 +20,93 @@ def euclidean(s1, s2):
 
 
 ###############################################################################
-# compute_pc() and remove_pc()
-# These functions were taken from the SIF embeddings code based on the paper by
-# Arora et al.
-# source code at https://github.com/PrincetonML/SIF
-###############################################################################
-def compute_pc(X,npc=1):
-    """
-    Compute the principal components. DO NOT MAKE THE DATA ZERO MEAN!
-    :param X: X[i,:] is a data point
-    :param npc: number of principal components to remove
-    :return: component_[i,:] is the i-th pc
-    """
-    svd = TruncatedSVD(n_components=npc, n_iter=7, random_state=0)
-    svd.fit(X)
-    return svd.components_
-def remove_pc(X,npc=1):
-    """
-    Remove the projection on the principal components
-    :param X: X[i,:] is a data point
-    :param npc: number of principal components to remove
-    :return: XX[i, :] is the data point after removing its projection
-    """
-    pc = compute_pc(X, npc)
-    if npc==1:
-        XX = X - X.dot(pc.transpose()) * pc
-    else:
-        XX = X - X.dot(pc.transpose()).dot(pc)
-    return XX
-
-
-###############################################################################
 # match_rules():
 # Returns a dictionary matching rules from pdk1 to pdk2. 
 #   - key: rule name from pdk1
 #   - value: list of matching pdk2 rule names
 # A rule may be matched to zero or more rules.
 ###############################################################################
-def match_rules(embed1, pdk1, embed2, pdk2):
+def match_rules(embed1, pdk1, embed2, pdk2, threshold):
     N1 = embed1.shape[0]
     N2 = embed2.shape[0]
 
     matches = dict()
+    indices = dict()
+
     for i in range(N1):
         s = np.zeros(N2)
         matches[pdk1[i]['name']] = []
-        # print(pdk1[i]['name'])
+        indices[i] = []
 
         for j in range(N2):
             s[j] = similarity(embed1[i,:], embed2[j,:])
-            if s[j] > THRESHOLD:
+            if s[j] > threshold:
                 matches[pdk1[i]['name']].append(pdk2[j]['name'])
+                indices[i].append(j)
 
         # index = np.argmax(s)
         # matches[pdk1[i]['name']] = pdk2[index]['name']
         # print(pdk1[i]['name'], pdk2[index]['name'])
 
-    return matches
+    return matches, indices
+
+
+def generate_output(filename, matches, pdk1, pdk2, name1, name2):
+    """
+    # generate ground truth from csv
+    table = []
+    with open('45to15.csv', newline='') as csvfile:
+        reader=csv.reader(csvfile,delimiter=',')
+        for row in reader:
+            if not row[1]:
+                m = ''
+            else:
+                m = '\n'.join(row[1:])
+            entry = (row[0].split('.')[0],row[0], m)
+            table.append(entry)
+    t = tabulate(table, headers=['Layer','PDK45', 'PDK15'],tablefmt='grid')
+    """
+    headers = ['Layer', name1, name2]
+    table = []
+    for index in matches.keys():
+        if not matches[index]:
+            match = "No match"
+        else:
+            names = []
+            for j in matches[index]:
+                names.append(pdk2[j]['name'])
+                pdk2[j]['used'] = True
+            match = '\n'.join(names)
+
+        entry = (pdk1[index]['layer'], pdk1[index]['name'], match)
+        table.append(entry)
+    t = tabulate(table, headers=headers, tablefmt='grid')
+
+    unused = {}
+    for rule in pdk2:
+        # store layers
+        layer = rule['layer']
+        if layer not in unused.keys():
+            unused[layer] = []
+
+        # if rule is unused
+        if 'used' not in rule.keys():
+            unused[layer].append(rule['name'])
+    table2 = []
+    for layer in unused.keys():
+        if not unused[layer]:
+            entry = (layer, "All matched")
+        else:
+            entry = (layer, '\n'.join(unused[layer]))
+        table2.append(entry)
+    t2 = tabulate(table2, headers=['Layer', name2], tablefmt='grid')
+
+    with open(filename, 'w') as f:
+        f.write('Matched Rules\n')
+        f.write(t)
+        f.write('\n\n\nUnmatched Rules\n')
+        f.write(t2)
+
 
 
 def pair_layers(list1, list2, threshold):
@@ -212,23 +230,41 @@ def check_matches(matches, match_file):
 
 
 def main():
-    print(len(sys.argv))
+    if len(sys.argv) > 1:
+        print(sys.argv[1:])
+
+    NUMBER_REPLACEMENT = "NUMBER"
+    THRESHOLD = 0.5
+    WEIGHTS = [0.5, 1]
+    features = ['rule', 'description']
+    num_features = len(features)
+    embedding_type = "char"
+    output_file = "output.txt"
+
+    remove_jointpc = False
+    weighted_avg = True
+    remove_pc = True
+    a = 0.001
+
+    csv_file1 = "calibreDRC_45.csv"
+    csv_file2 = "calibreDRC_15.csv"
+    rul_file1 = "calibreDRC_45.rul"
+    rul_file2 = "calibreDRC_15.rul"
 
     print("----------Parameters----------")
     print("NUMBER_REPLACEMENT: %s" % NUMBER_REPLACEMENT)
-    print("EMBEDDING_SIZE = %d" % EMBEDDING_SIZE)
     print("THRESHOLD = %.3f" % THRESHOLD)
     print("WEIGHTS:")
     for i, w in enumerate(WEIGHTS):
-        print("\t'%s' = %d" % (features[i], w))
+        print("\t'%s' = %.2f" % (features[i], w))
     print("------------------------------")
 
     # import rules
     print("1. Reading rules...")
-    pdk1_csv, layers1 = read_csv("calibreDRC_15.csv")
-    pdk2_csv, layers2 = read_csv("calibreDRC_45.csv")
-    pdk1_rul, word_count1 = read_rul("calibreDRC_15.rul", NUMBER_REPLACEMENT, weighted_avg)
-    pdk2_rul, word_count2 = read_rul("calibreDRC_45.rul", NUMBER_REPLACEMENT, weighted_avg)
+    pdk1_csv, layers1 = read_csv(csv_file1)
+    pdk2_csv, layers2 = read_csv(csv_file2)
+    pdk1_rul, word_count1 = read_rul(rul_file1, NUMBER_REPLACEMENT, weighted_avg)
+    pdk2_rul, word_count2 = read_rul(rul_file2, NUMBER_REPLACEMENT, weighted_avg)
 
     N1 = len(pdk1_rul)
     N2 = len(pdk2_rul)
@@ -241,38 +277,50 @@ def main():
     
     # generate and store rule embeddings
     print("2. Generating rule embeddings...")
-    E = SentenceEmbedding("bert")
+    input1 = {
+        'pdk': pdk1_rul,
+        'features': features,
+        'weights': WEIGHTS,
+        'word_counts': word_count1,
+        'a': a,
+        'number_replacement': NUMBER_REPLACEMENT,
+        'remove_pc': remove_pc
+    }
 
-    partial_embed1 = np.zeros((num_features, N1, E.size))
-    partial_embed2 = np.zeros((num_features, N2, E.size))
+    input2 = {
+        'pdk': pdk2_rul,
+        'features': features,
+        'weights': WEIGHTS,
+        'word_counts': word_count2,
+        'a': a,
+        'number_replacement': NUMBER_REPLACEMENT,
+        'remove_pc': remove_pc
+    }
 
-    for i in range(num_features):
-        result1 = E.embed_key(pdk1_rul, features[i], word_count1, NUMBER_REPLACEMENT)
-        result2 = E.embed_key(pdk2_rul, features[i], word_count2, NUMBER_REPLACEMENT)
+    E1 = SentenceEmbedding(embedding_type, input1)
+    E2 = SentenceEmbedding(embedding_type, input2)
 
-        # remove first principle component
-        if use_sif:
-            temp = np.row_stack((result1,result2))
-            emb = remove_pc(temp, 1)
-            partial_embed1[i] = emb[0:N1,:]
-            partial_embed2[i] = emb[N1:,:]
-
-    # compute weight sum of embeddings (f[1]*w[1] + f[2]*w[2])
-    embed1 = np.tensordot(partial_embed1, WEIGHTS, axes=(0,0))
-    embed2 = np.tensordot(partial_embed2, WEIGHTS, axes=(0,0))
+    if remove_jointpc:
+        embed1, embed2 = joint_embedding(E1,E2)
+    else:
+        embed1 = E1.embed_all()
+        embed2 = E2 .embed_all()
 
     # match rules
-    print("3. Matching pdk15 to pdk45...")
-    matches = match_rules(embed1, pdk1_rul, embed2, pdk2_rul)
+    print("3. Matching pdk45 to pdk15...")
+    matches1, index1 = match_rules(embed1, pdk1_rul, embed2, pdk2_rul, THRESHOLD)
 
-    score = check_matches(matches, "15to45.csv")
+    score = check_matches(matches1, "45to15.csv")
     print("  %.3f%% correct" % (score*100))
 
-    print("4. Matching pdk45 to pdk15...")
-    matches = match_rules(embed2, pdk2_rul, embed1, pdk1_rul)
+    print("4. Matching pdk15 to pdk45...")
+    matches2, index2 = match_rules(embed2, pdk2_rul, embed1, pdk1_rul, THRESHOLD)
 
-    score = check_matches(matches, "45to15.csv")
+    score = check_matches(matches2, "15to45.csv")
     print("  %.3f%% correct" % (score*100))
+
+    print("Writing output to %s" % output_file)
+    generate_output(output_file, index1, pdk1_rul, pdk2_rul, 'FreePDK45', 'FreePDK15')
 
 
 if __name__ == "__main__":

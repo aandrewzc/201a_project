@@ -1,0 +1,795 @@
++---------+-----------+-----------------+
+| Layer   | PDK45     | PDK15           |
++=========+===========+=================+
+| Well    | Well.1    |                 |
++---------+-----------+-----------------+
+| Well    | Well.2    | RULE_NW002      |
++---------+-----------+-----------------+
+| Well    | Well.4    | RULE_NW003      |
++---------+-----------+-----------------+
+| Poly    | Poly.1    |                 |
++---------+-----------+-----------------+
+| Poly    | Poly.2    |                 |
++---------+-----------+-----------------+
+| Poly    | Poly.3    |                 |
++---------+-----------+-----------------+
+| Poly    | Poly.4    |                 |
++---------+-----------+-----------------+
+| Poly    | Poly.5    |                 |
++---------+-----------+-----------------+
+| Poly    | Poly.6    |                 |
++---------+-----------+-----------------+
+| Active  | Active.1  | RULE_ACT001     |
+|         |           | RULE_ACT002     |
+|         |           | RULE_ACT004     |
++---------+-----------+-----------------+
+| Active  | Active.2  | RULE_ACT003     |
+|         |           | RULE_ACT005     |
+|         |           | RULE_ACT007A    |
++---------+-----------+-----------------+
+| Active  | Active.3  | RULE_ACT007B    |
++---------+-----------+-----------------+
+| Active  | Active.4  |                 |
++---------+-----------+-----------------+
+| Implant | Implant.1 | RULE_NIM002A    |
+|         |           | RULE_NIM002B    |
+|         |           | RULE_NIM002AB   |
+|         |           | RULE_PIM002A    |
+|         |           | RULE_PIM002B    |
+|         |           | RULE_PIM002AB   |
++---------+-----------+-----------------+
+| Implant | Implant.2 | RULE_NIM005     |
+|         |           | RULE_PIM005     |
++---------+-----------+-----------------+
+| Implant | Implant.3 | RULE_NIM001B    |
+|         |           | RULE_NIM001C    |
+|         |           | RULE_PIM001B    |
+|         |           | RULE_PIM001C    |
++---------+-----------+-----------------+
+| Implant | Implant.4 | RULE_NIM001A    |
+|         |           | RULE_PIM001A    |
++---------+-----------+-----------------+
+| Implant | Implant.6 |                 |
++---------+-----------+-----------------+
+| Contact | Contact.1 |                 |
++---------+-----------+-----------------+
+| Contact | Contact.2 |                 |
++---------+-----------+-----------------+
+| Contact | Contact.3 |                 |
++---------+-----------+-----------------+
+| Contact | Contact.4 |                 |
++---------+-----------+-----------------+
+| Contact | Contact.5 |                 |
++---------+-----------+-----------------+
+| Contact | Contact.6 |                 |
++---------+-----------+-----------------+
+| Metal1  | Metal1.1  | RULE_M1001A     |
+|         |           | RULE_M1001B     |
+|         |           | RULE_M1001      |
++---------+-----------+-----------------+
+| Metal1  | Metal1.2  | RULE_M1006AB    |
+|         |           | RULE_M1006      |
++---------+-----------+-----------------+
+| Metal1  | Metal1.3  | RULE_M1023A     |
+|         |           | RULE_M1023B     |
+|         |           | RULE_M1023      |
+|         |           | RULE_M1024      |
++---------+-----------+-----------------+
+| Metal1  | Metal1.4  |                 |
++---------+-----------+-----------------+
+| Via1    | Via1.1    |                 |
++---------+-----------+-----------------+
+| Via1    | Via1.2    | RULE_V1002A     |
+|         |           | RULE_V1002B     |
+|         |           | RULE_V1003A     |
+|         |           | RULE_V1003B     |
++---------+-----------+-----------------+
+| Via1    | Via1.3    | RULE_V1004      |
++---------+-----------+-----------------+
+| Via1    | Via1.4    | RULE_V1004      |
++---------+-----------+-----------------+
+| Metal2  | Metal2.1  | RULE_MINT1001A  |
+|         |           | RULE_MINT1001B  |
+|         |           | RULE_MINT1001   |
++---------+-----------+-----------------+
+| Metal2  | Metal2.2  | RULE_MINT1006AB |
+|         |           | RULE_MINT1006   |
++---------+-----------+-----------------+
+| Metal2  | Metal2.3  | RULE_MINT1023A  |
+|         |           | RULE_MINT1023B  |
+|         |           | RULE_MINT1023   |
+|         |           | RULE_MINT1024   |
++---------+-----------+-----------------+
+| Metal2  | Metal2.4  |                 |
++---------+-----------+-----------------+
+| Via2    | Via2.1    |                 |
++---------+-----------+-----------------+
+| Via2    | Via2.2    | RULE_VINT1002A  |
+|         |           | RULE_VINT1002B  |
+|         |           | RULE_VINT1003A  |
+|         |           | RULE_VINT1003B  |
++---------+-----------+-----------------+
+| Via2    | Via2.3    | RULE_VINT1004   |
++---------+-----------+-----------------+
+| Via2    | Via2.4    | RULE_VINT1004   |
++---------+-----------+-----------------+
+| Metal3  | Metal3.1  | RULE_MINT2001A  |
+|         |           | RULE_MINT2001B  |
+|         |           | RULE_MINT2001   |
++---------+-----------+-----------------+
+| Metal3  | Metal3.2  | RULE_MINT2006AB |
+|         |           | RULE_MINT2006   |
++---------+-----------+-----------------+
+| Metal3  | Metal3.3  | RULE_MINT2023A  |
+|         |           | RULE_MINT2023B  |
+|         |           | RULE_MINT2023   |
+|         |           | RULE_MINT2024   |
++---------+-----------+-----------------+
+| Metal3  | Metal3.4  |                 |
++---------+-----------+-----------------+
+| Via3    | Via3.1    |                 |
++---------+-----------+-----------------+
+| Via3    | Via3.2    | RULE_VINT2002A  |
+|         |           | RULE_VINT2002B  |
+|         |           | RULE_VINT2003A  |
+|         |           | RULE_VINT2003B  |
++---------+-----------+-----------------+
+| Via3    | Via3.3    | RULE_VINT2004   |
++---------+-----------+-----------------+
+| Via3    | Via3.4    | RULE_VINT2004   |
++---------+-----------+-----------------+
+| Metal4  | Metal4.1  | RULE_MSMG1001   |
++---------+-----------+-----------------+
+| Metal4  | Metal4.2  |                 |
++---------+-----------+-----------------+
+| Metal4  | Metal4.3  | RULE_MSMG1011   |
++---------+-----------+-----------------+
+| Via4    | Via4.1    |                 |
++---------+-----------+-----------------+
+| Via4    | Via4.2    | RULE_VSMG1002   |
+|         |           | RULE_VSMG1003   |
++---------+-----------+-----------------+
+| Via4    | Via4.3    | RULE_VSMG1004   |
++---------+-----------+-----------------+
+| Via4    | Via4.4    | RULE_VSMG1004   |
++---------+-----------+-----------------+
+| Metal5  | Metal5.1  | RULE_MSMG2001   |
++---------+-----------+-----------------+
+| Metal5  | Metal5.2  |                 |
++---------+-----------+-----------------+
+| Metal5  | Metal5.3  | RULE_MSMG2011   |
++---------+-----------+-----------------+
+| Via5    | Via5.1    |                 |
++---------+-----------+-----------------+
+| Via5    | Via5.2    | RULE_VSMG2002   |
+|         |           | RULE_VSMG2003   |
++---------+-----------+-----------------+
+| Via5    | Via5.3    | RULE_VSMG2004   |
++---------+-----------+-----------------+
+| Via5    | Via5.4    | RULE_VSMG2004   |
++---------+-----------+-----------------+
+| Metal6  | Metal6.1  | RULE_MSMG3001   |
++---------+-----------+-----------------+
+| Metal6  | Metal6.2  |                 |
++---------+-----------+-----------------+
+| Metal6  | Metal6.3  | RULE_MSMG3011   |
++---------+-----------+-----------------+
+| Via6    | Via6.1    |                 |
++---------+-----------+-----------------+
+| Via6    | Via6.2    | RULE_VSMG3002   |
+|         |           | RULE_VSMG3003   |
++---------+-----------+-----------------+
+| Via6    | Via6.3    | RULE_VSMG3004   |
++---------+-----------+-----------------+
+| Via6    | Via6.4    | RULE_VSMG3004   |
++---------+-----------+-----------------+
+| Metal7  | Metal7.1  |                 |
++---------+-----------+-----------------+
+| Metal7  | Metal7.2  |                 |
++---------+-----------+-----------------+
+| Metal7  | Metal7.3  |                 |
++---------+-----------+-----------------+
+| Via7    | Via7.1    |                 |
++---------+-----------+-----------------+
+| Via7    | Via7.2    |                 |
++---------+-----------+-----------------+
+| Via7    | Via7.3    |                 |
++---------+-----------+-----------------+
+| Via7    | Via7.4    |                 |
++---------+-----------+-----------------+
+| Metal8  | Metal8.1  |                 |
++---------+-----------+-----------------+
+| Metal8  | Metal8.2  |                 |
++---------+-----------+-----------------+
+| Metal8  | Metal8.3  |                 |
++---------+-----------+-----------------+
+| Via8    | Via8.1    |                 |
++---------+-----------+-----------------+
+| Via8    | Via8.2    |                 |
++---------+-----------+-----------------+
+| Via8    | Via8.3    |                 |
++---------+-----------+-----------------+
+| Via8    | Via8.4    |                 |
++---------+-----------+-----------------+
+| Metal9  | Metal9.1  | RULE_MG1001     |
++---------+-----------+-----------------+
+| Metal9  | Metal9.2  |                 |
++---------+-----------+-----------------+
+| Metal9  | Metal9.3  | RULE_MG1010     |
++---------+-----------+-----------------+
+| Via9    | Via9.1    |                 |
++---------+-----------+-----------------+
+| Via9    | Via9.2    | RULE_VG1002     |
+|         |           | RULE_VG1003     |
++---------+-----------+-----------------+
+| Via9    | Via9.3    | RULE_VG1004     |
++---------+-----------+-----------------+
+| Via9    | Via9.4    | RULE_VG1004     |
++---------+-----------+-----------------+
+| Metal10 | Metal10.1 | RULE_MG2001     |
++---------+-----------+-----------------+
+| Metal10 | Metal10.2 |                 |
++---------+-----------+-----------------+
+| Metal10 | Metal10.3 | RULE_MG2010     |
++---------+-----------+-----------------+
+| Metal1  | Metal1.5  | RULE_M1008A     |
+|         |           | RULE_M1008B     |
+|         |           | RULE_M1009A     |
+|         |           | RULE_M1009B     |
+|         |           | RULE_M1010A     |
+|         |           | RULE_M1010B     |
+|         |           | RULE_M1011A     |
+|         |           | RULE_M1011B     |
+|         |           | RULE_M1012A     |
+|         |           | RULE_M1012B     |
+|         |           | RULE_M1013A     |
+|         |           | RULE_M1013B     |
+|         |           | RULE_M1014A     |
+|         |           | RULE_M1014B     |
+|         |           | RULE_M1015A     |
+|         |           | RULE_M1015B     |
+|         |           | RULE_M1016A     |
+|         |           | RULE_M1016B     |
+|         |           | RULE_M1017A     |
+|         |           | RULE_M1017B     |
+|         |           | RULE_M1018A     |
+|         |           | RULE_M1019B     |
+|         |           | RULE_M1020A     |
+|         |           | RULE_M1020B     |
+|         |           | RULE_M1021A     |
+|         |           | RULE_M1021B     |
++---------+-----------+-----------------+
+| Metal1  | Metal1.6  | RULE_M1008A     |
+|         |           | RULE_M1008B     |
+|         |           | RULE_M1009A     |
+|         |           | RULE_M1009B     |
+|         |           | RULE_M1010A     |
+|         |           | RULE_M1010B     |
+|         |           | RULE_M1011A     |
+|         |           | RULE_M1011B     |
+|         |           | RULE_M1012A     |
+|         |           | RULE_M1012B     |
+|         |           | RULE_M1013A     |
+|         |           | RULE_M1013B     |
+|         |           | RULE_M1014A     |
+|         |           | RULE_M1014B     |
+|         |           | RULE_M1015A     |
+|         |           | RULE_M1015B     |
+|         |           | RULE_M1016A     |
+|         |           | RULE_M1016B     |
+|         |           | RULE_M1017A     |
+|         |           | RULE_M1017B     |
+|         |           | RULE_M1018A     |
+|         |           | RULE_M1019B     |
+|         |           | RULE_M1020A     |
+|         |           | RULE_M1020B     |
+|         |           | RULE_M1021A     |
+|         |           | RULE_M1021B     |
++---------+-----------+-----------------+
+| Metal1  | Metal1.7  | RULE_M1008A     |
+|         |           | RULE_M1008B     |
+|         |           | RULE_M1009A     |
+|         |           | RULE_M1009B     |
+|         |           | RULE_M1010A     |
+|         |           | RULE_M1010B     |
+|         |           | RULE_M1011A     |
+|         |           | RULE_M1011B     |
+|         |           | RULE_M1012A     |
+|         |           | RULE_M1012B     |
+|         |           | RULE_M1013A     |
+|         |           | RULE_M1013B     |
+|         |           | RULE_M1014A     |
+|         |           | RULE_M1014B     |
+|         |           | RULE_M1015A     |
+|         |           | RULE_M1015B     |
+|         |           | RULE_M1016A     |
+|         |           | RULE_M1016B     |
+|         |           | RULE_M1017A     |
+|         |           | RULE_M1017B     |
+|         |           | RULE_M1018A     |
+|         |           | RULE_M1019B     |
+|         |           | RULE_M1020A     |
+|         |           | RULE_M1020B     |
+|         |           | RULE_M1021A     |
+|         |           | RULE_M1021B     |
++---------+-----------+-----------------+
+| Metal1  | Metal1.8  | RULE_M1008A     |
+|         |           | RULE_M1008B     |
+|         |           | RULE_M1009A     |
+|         |           | RULE_M1009B     |
+|         |           | RULE_M1010A     |
+|         |           | RULE_M1010B     |
+|         |           | RULE_M1011A     |
+|         |           | RULE_M1011B     |
+|         |           | RULE_M1012A     |
+|         |           | RULE_M1012B     |
+|         |           | RULE_M1013A     |
+|         |           | RULE_M1013B     |
+|         |           | RULE_M1014A     |
+|         |           | RULE_M1014B     |
+|         |           | RULE_M1015A     |
+|         |           | RULE_M1015B     |
+|         |           | RULE_M1016A     |
+|         |           | RULE_M1016B     |
+|         |           | RULE_M1017A     |
+|         |           | RULE_M1017B     |
+|         |           | RULE_M1018A     |
+|         |           | RULE_M1019B     |
+|         |           | RULE_M1020A     |
+|         |           | RULE_M1020B     |
+|         |           | RULE_M1021A     |
+|         |           | RULE_M1021B     |
++---------+-----------+-----------------+
+| Metal1  | Metal1.9  | RULE_M1008A     |
+|         |           | RULE_M1008B     |
+|         |           | RULE_M1009A     |
+|         |           | RULE_M1009B     |
+|         |           | RULE_M1010A     |
+|         |           | RULE_M1010B     |
+|         |           | RULE_M1011A     |
+|         |           | RULE_M1011B     |
+|         |           | RULE_M1012A     |
+|         |           | RULE_M1012B     |
+|         |           | RULE_M1013A     |
+|         |           | RULE_M1013B     |
+|         |           | RULE_M1014A     |
+|         |           | RULE_M1014B     |
+|         |           | RULE_M1015A     |
+|         |           | RULE_M1015B     |
+|         |           | RULE_M1016A     |
+|         |           | RULE_M1016B     |
+|         |           | RULE_M1017A     |
+|         |           | RULE_M1017B     |
+|         |           | RULE_M1018A     |
+|         |           | RULE_M1019B     |
+|         |           | RULE_M1020A     |
+|         |           | RULE_M1020B     |
+|         |           | RULE_M1021A     |
+|         |           | RULE_M1021B     |
++---------+-----------+-----------------+
+| Metal2  | Metal2.5  | RULE_MINT1008A  |
+|         |           | RULE_MINT1008B  |
+|         |           | RULE_MINT1009A  |
+|         |           | RULE_MINT1009B  |
+|         |           | RULE_MINT1010A  |
+|         |           | RULE_MINT1010B  |
+|         |           | RULE_MINT1011A  |
+|         |           | RULE_MINT1011B  |
+|         |           | RULE_MINT1012A  |
+|         |           | RULE_MINT1012B  |
+|         |           | RULE_MINT1013A  |
+|         |           | RULE_MINT1013B  |
+|         |           | RULE_MINT1014A  |
+|         |           | RULE_MINT1014B  |
+|         |           | RULE_MINT1015A  |
+|         |           | RULE_MINT1015B  |
+|         |           | RULE_MINT1016A  |
+|         |           | RULE_MINT1016B  |
+|         |           | RULE_MINT1017A  |
+|         |           | RULE_MINT1017B  |
+|         |           | RULE_MINT1018A  |
+|         |           | RULE_MINT1019B  |
+|         |           | RULE_MINT1020A  |
+|         |           | RULE_MINT1020B  |
+|         |           | RULE_MINT1021A  |
+|         |           | RULE_MINT1021B  |
++---------+-----------+-----------------+
+| Metal2  | Metal2.6  | RULE_MINT1008A  |
+|         |           | RULE_MINT1008B  |
+|         |           | RULE_MINT1009A  |
+|         |           | RULE_MINT1009B  |
+|         |           | RULE_MINT1010A  |
+|         |           | RULE_MINT1010B  |
+|         |           | RULE_MINT1011A  |
+|         |           | RULE_MINT1011B  |
+|         |           | RULE_MINT1012A  |
+|         |           | RULE_MINT1012B  |
+|         |           | RULE_MINT1013A  |
+|         |           | RULE_MINT1013B  |
+|         |           | RULE_MINT1014A  |
+|         |           | RULE_MINT1014B  |
+|         |           | RULE_MINT1015A  |
+|         |           | RULE_MINT1015B  |
+|         |           | RULE_MINT1016A  |
+|         |           | RULE_MINT1016B  |
+|         |           | RULE_MINT1017A  |
+|         |           | RULE_MINT1017B  |
+|         |           | RULE_MINT1018A  |
+|         |           | RULE_MINT1019B  |
+|         |           | RULE_MINT1020A  |
+|         |           | RULE_MINT1020B  |
+|         |           | RULE_MINT1021A  |
+|         |           | RULE_MINT1021B  |
++---------+-----------+-----------------+
+| Metal2  | Metal2.7  | RULE_MINT1008A  |
+|         |           | RULE_MINT1008B  |
+|         |           | RULE_MINT1009A  |
+|         |           | RULE_MINT1009B  |
+|         |           | RULE_MINT1010A  |
+|         |           | RULE_MINT1010B  |
+|         |           | RULE_MINT1011A  |
+|         |           | RULE_MINT1011B  |
+|         |           | RULE_MINT1012A  |
+|         |           | RULE_MINT1012B  |
+|         |           | RULE_MINT1013A  |
+|         |           | RULE_MINT1013B  |
+|         |           | RULE_MINT1014A  |
+|         |           | RULE_MINT1014B  |
+|         |           | RULE_MINT1015A  |
+|         |           | RULE_MINT1015B  |
+|         |           | RULE_MINT1016A  |
+|         |           | RULE_MINT1016B  |
+|         |           | RULE_MINT1017A  |
+|         |           | RULE_MINT1017B  |
+|         |           | RULE_MINT1018A  |
+|         |           | RULE_MINT1019B  |
+|         |           | RULE_MINT1020A  |
+|         |           | RULE_MINT1020B  |
+|         |           | RULE_MINT1021A  |
+|         |           | RULE_MINT1021B  |
++---------+-----------+-----------------+
+| Metal2  | Metal2.8  | RULE_MINT1008A  |
+|         |           | RULE_MINT1008B  |
+|         |           | RULE_MINT1009A  |
+|         |           | RULE_MINT1009B  |
+|         |           | RULE_MINT1010A  |
+|         |           | RULE_MINT1010B  |
+|         |           | RULE_MINT1011A  |
+|         |           | RULE_MINT1011B  |
+|         |           | RULE_MINT1012A  |
+|         |           | RULE_MINT1012B  |
+|         |           | RULE_MINT1013A  |
+|         |           | RULE_MINT1013B  |
+|         |           | RULE_MINT1014A  |
+|         |           | RULE_MINT1014B  |
+|         |           | RULE_MINT1015A  |
+|         |           | RULE_MINT1015B  |
+|         |           | RULE_MINT1016A  |
+|         |           | RULE_MINT1016B  |
+|         |           | RULE_MINT1017A  |
+|         |           | RULE_MINT1017B  |
+|         |           | RULE_MINT1018A  |
+|         |           | RULE_MINT1019B  |
+|         |           | RULE_MINT1020A  |
+|         |           | RULE_MINT1020B  |
+|         |           | RULE_MINT1021A  |
+|         |           | RULE_MINT1021B  |
++---------+-----------+-----------------+
+| Metal2  | Metal2.9  | RULE_MINT1008A  |
+|         |           | RULE_MINT1008B  |
+|         |           | RULE_MINT1009A  |
+|         |           | RULE_MINT1009B  |
+|         |           | RULE_MINT1010A  |
+|         |           | RULE_MINT1010B  |
+|         |           | RULE_MINT1011A  |
+|         |           | RULE_MINT1011B  |
+|         |           | RULE_MINT1012A  |
+|         |           | RULE_MINT1012B  |
+|         |           | RULE_MINT1013A  |
+|         |           | RULE_MINT1013B  |
+|         |           | RULE_MINT1014A  |
+|         |           | RULE_MINT1014B  |
+|         |           | RULE_MINT1015A  |
+|         |           | RULE_MINT1015B  |
+|         |           | RULE_MINT1016A  |
+|         |           | RULE_MINT1016B  |
+|         |           | RULE_MINT1017A  |
+|         |           | RULE_MINT1017B  |
+|         |           | RULE_MINT1018A  |
+|         |           | RULE_MINT1019B  |
+|         |           | RULE_MINT1020A  |
+|         |           | RULE_MINT1020B  |
+|         |           | RULE_MINT1021A  |
+|         |           | RULE_MINT1021B  |
++---------+-----------+-----------------+
+| Metal3  | Metal3.5  | RULE_MINT2008A  |
+|         |           | RULE_MINT2008B  |
+|         |           | RULE_MINT2009A  |
+|         |           | RULE_MINT2009B  |
+|         |           | RULE_MINT2010A  |
+|         |           | RULE_MINT2010B  |
+|         |           | RULE_MINT2011A  |
+|         |           | RULE_MINT2011B  |
+|         |           | RULE_MINT2012A  |
+|         |           | RULE_MINT2012B  |
+|         |           | RULE_MINT2013A  |
+|         |           | RULE_MINT2013B  |
+|         |           | RULE_MINT2014A  |
+|         |           | RULE_MINT2014B  |
+|         |           | RULE_MINT2015A  |
+|         |           | RULE_MINT2015B  |
+|         |           | RULE_MINT2016A  |
+|         |           | RULE_MINT2016B  |
+|         |           | RULE_MINT2017A  |
+|         |           | RULE_MINT2017B  |
+|         |           | RULE_MINT2018A  |
+|         |           | RULE_MINT2019B  |
+|         |           | RULE_MINT2020A  |
+|         |           | RULE_MINT2020B  |
+|         |           | RULE_MINT2021A  |
+|         |           | RULE_MINT2021B  |
++---------+-----------+-----------------+
+| Metal3  | Metal3.6  | RULE_MINT2008A  |
+|         |           | RULE_MINT2008B  |
+|         |           | RULE_MINT2009A  |
+|         |           | RULE_MINT2009B  |
+|         |           | RULE_MINT2010A  |
+|         |           | RULE_MINT2010B  |
+|         |           | RULE_MINT2011A  |
+|         |           | RULE_MINT2011B  |
+|         |           | RULE_MINT2012A  |
+|         |           | RULE_MINT2012B  |
+|         |           | RULE_MINT2013A  |
+|         |           | RULE_MINT2013B  |
+|         |           | RULE_MINT2014A  |
+|         |           | RULE_MINT2014B  |
+|         |           | RULE_MINT2015A  |
+|         |           | RULE_MINT2015B  |
+|         |           | RULE_MINT2016A  |
+|         |           | RULE_MINT2016B  |
+|         |           | RULE_MINT2017A  |
+|         |           | RULE_MINT2017B  |
+|         |           | RULE_MINT2018A  |
+|         |           | RULE_MINT2019B  |
+|         |           | RULE_MINT2020A  |
+|         |           | RULE_MINT2020B  |
+|         |           | RULE_MINT2021A  |
+|         |           | RULE_MINT2021B  |
++---------+-----------+-----------------+
+| Metal3  | Metal3.7  | RULE_MINT2008A  |
+|         |           | RULE_MINT2008B  |
+|         |           | RULE_MINT2009A  |
+|         |           | RULE_MINT2009B  |
+|         |           | RULE_MINT2010A  |
+|         |           | RULE_MINT2010B  |
+|         |           | RULE_MINT2011A  |
+|         |           | RULE_MINT2011B  |
+|         |           | RULE_MINT2012A  |
+|         |           | RULE_MINT2012B  |
+|         |           | RULE_MINT2013A  |
+|         |           | RULE_MINT2013B  |
+|         |           | RULE_MINT2014A  |
+|         |           | RULE_MINT2014B  |
+|         |           | RULE_MINT2015A  |
+|         |           | RULE_MINT2015B  |
+|         |           | RULE_MINT2016A  |
+|         |           | RULE_MINT2016B  |
+|         |           | RULE_MINT2017A  |
+|         |           | RULE_MINT2017B  |
+|         |           | RULE_MINT2018A  |
+|         |           | RULE_MINT2019B  |
+|         |           | RULE_MINT2020A  |
+|         |           | RULE_MINT2020B  |
+|         |           | RULE_MINT2021A  |
+|         |           | RULE_MINT2021B  |
++---------+-----------+-----------------+
+| Metal3  | Metal3.8  | RULE_MINT2008A  |
+|         |           | RULE_MINT2008B  |
+|         |           | RULE_MINT2009A  |
+|         |           | RULE_MINT2009B  |
+|         |           | RULE_MINT2010A  |
+|         |           | RULE_MINT2010B  |
+|         |           | RULE_MINT2011A  |
+|         |           | RULE_MINT2011B  |
+|         |           | RULE_MINT2012A  |
+|         |           | RULE_MINT2012B  |
+|         |           | RULE_MINT2013A  |
+|         |           | RULE_MINT2013B  |
+|         |           | RULE_MINT2014A  |
+|         |           | RULE_MINT2014B  |
+|         |           | RULE_MINT2015A  |
+|         |           | RULE_MINT2015B  |
+|         |           | RULE_MINT2016A  |
+|         |           | RULE_MINT2016B  |
+|         |           | RULE_MINT2017A  |
+|         |           | RULE_MINT2017B  |
+|         |           | RULE_MINT2018A  |
+|         |           | RULE_MINT2019B  |
+|         |           | RULE_MINT2020A  |
+|         |           | RULE_MINT2020B  |
+|         |           | RULE_MINT2021A  |
+|         |           | RULE_MINT2021B  |
++---------+-----------+-----------------+
+| Metal3  | Metal3.9  | RULE_MINT2008A  |
+|         |           | RULE_MINT2008B  |
+|         |           | RULE_MINT2009A  |
+|         |           | RULE_MINT2009B  |
+|         |           | RULE_MINT2010A  |
+|         |           | RULE_MINT2010B  |
+|         |           | RULE_MINT2011A  |
+|         |           | RULE_MINT2011B  |
+|         |           | RULE_MINT2012A  |
+|         |           | RULE_MINT2012B  |
+|         |           | RULE_MINT2013A  |
+|         |           | RULE_MINT2013B  |
+|         |           | RULE_MINT2014A  |
+|         |           | RULE_MINT2014B  |
+|         |           | RULE_MINT2015A  |
+|         |           | RULE_MINT2015B  |
+|         |           | RULE_MINT2016A  |
+|         |           | RULE_MINT2016B  |
+|         |           | RULE_MINT2017A  |
+|         |           | RULE_MINT2017B  |
+|         |           | RULE_MINT2018A  |
+|         |           | RULE_MINT2019B  |
+|         |           | RULE_MINT2020A  |
+|         |           | RULE_MINT2020B  |
+|         |           | RULE_MINT2021A  |
+|         |           | RULE_MINT2021B  |
++---------+-----------+-----------------+
+| Metal4  | Metal4.5  | RULE_MSMG1006   |
+|         |           | RULE_MSMG1007   |
+|         |           | RULE_MSMG1008   |
+|         |           | RULE_MSMG1009   |
+|         |           | RULE_MSMG1010   |
++---------+-----------+-----------------+
+| Metal4  | Metal4.6  | RULE_MSMG1006   |
+|         |           | RULE_MSMG1007   |
+|         |           | RULE_MSMG1008   |
+|         |           | RULE_MSMG1009   |
+|         |           | RULE_MSMG1010   |
++---------+-----------+-----------------+
+| Metal4  | Metal4.7  | RULE_MSMG1006   |
+|         |           | RULE_MSMG1007   |
+|         |           | RULE_MSMG1008   |
+|         |           | RULE_MSMG1009   |
+|         |           | RULE_MSMG1010   |
++---------+-----------+-----------------+
+| Metal4  | Metal4.8  | RULE_MSMG1006   |
+|         |           | RULE_MSMG1007   |
+|         |           | RULE_MSMG1008   |
+|         |           | RULE_MSMG1009   |
+|         |           | RULE_MSMG1010   |
++---------+-----------+-----------------+
+| Metal5  | Metal5.5  | RULE_MSMG2006   |
+|         |           | RULE_MSMG2007   |
+|         |           | RULE_MSMG2008   |
+|         |           | RULE_MSMG2009   |
+|         |           | RULE_MSMG2010   |
++---------+-----------+-----------------+
+| Metal5  | Metal5.6  | RULE_MSMG2006   |
+|         |           | RULE_MSMG2007   |
+|         |           | RULE_MSMG2008   |
+|         |           | RULE_MSMG2009   |
+|         |           | RULE_MSMG2010   |
++---------+-----------+-----------------+
+| Metal5  | Metal5.7  | RULE_MSMG2006   |
+|         |           | RULE_MSMG2007   |
+|         |           | RULE_MSMG2008   |
+|         |           | RULE_MSMG2009   |
+|         |           | RULE_MSMG2010   |
++---------+-----------+-----------------+
+| Metal5  | Metal5.8  | RULE_MSMG2006   |
+|         |           | RULE_MSMG2007   |
+|         |           | RULE_MSMG2008   |
+|         |           | RULE_MSMG2009   |
+|         |           | RULE_MSMG2010   |
++---------+-----------+-----------------+
+| Metal6  | Metal6.5  | RULE_MSMG3006   |
+|         |           | RULE_MSMG3007   |
+|         |           | RULE_MSMG3008   |
+|         |           | RULE_MSMG3009   |
+|         |           | RULE_MSMG3010   |
++---------+-----------+-----------------+
+| Metal6  | Metal6.6  | RULE_MSMG3006   |
+|         |           | RULE_MSMG3007   |
+|         |           | RULE_MSMG3008   |
+|         |           | RULE_MSMG3009   |
+|         |           | RULE_MSMG3010   |
++---------+-----------+-----------------+
+| Metal6  | Metal6.7  | RULE_MSMG3006   |
+|         |           | RULE_MSMG3007   |
+|         |           | RULE_MSMG3008   |
+|         |           | RULE_MSMG3009   |
+|         |           | RULE_MSMG3010   |
++---------+-----------+-----------------+
+| Metal6  | Metal6.8  | RULE_MSMG3006   |
+|         |           | RULE_MSMG3007   |
+|         |           | RULE_MSMG3008   |
+|         |           | RULE_MSMG3009   |
+|         |           | RULE_MSMG3010   |
++---------+-----------+-----------------+
+| Metal7  | Metal7.5  |                 |
++---------+-----------+-----------------+
+| Metal7  | Metal7.6  |                 |
++---------+-----------+-----------------+
+| Metal7  | Metal7.7  |                 |
++---------+-----------+-----------------+
+| Metal8  | Metal8.5  |                 |
++---------+-----------+-----------------+
+| Metal8  | Metal8.6  |                 |
++---------+-----------+-----------------+
+| Metal8  | Metal8.7  |                 |
++---------+-----------+-----------------+
+| Metal9  | Metal9.5  | RULE_MG1006     |
+|         |           | RULE_MG1007     |
+|         |           | RULE_MG1008     |
+|         |           | RULE_MG1009     |
++---------+-----------+-----------------+
+| Metal9  | Metal9.6  | RULE_MG1006     |
+|         |           | RULE_MG1007     |
+|         |           | RULE_MG1008     |
+|         |           | RULE_MG1009     |
++---------+-----------+-----------------+
+| Metal10 | Metal10.5 | RULE_MG2006     |
+|         |           | RULE_MG2007     |
+|         |           | RULE_MG2008     |
+|         |           | RULE_MG2009     |
++---------+-----------+-----------------+
+| Metal10 | Metal10.6 | RULE_MG2006     |
+|         |           | RULE_MG2007     |
+|         |           | RULE_MG2008     |
+|         |           | RULE_MG2009     |
++---------+-----------+-----------------+
+| Grid    | Grid.1    | RULE_MIS01      |
++---------+-----------+-----------------+
+| Grid    | Grid.2    | RULE_MIS01      |
++---------+-----------+-----------------+
+| Grid    | Grid.3    | RULE_MIS01      |
++---------+-----------+-----------------+
+| Grid    | Grid.4    | RULE_MIS01      |
++---------+-----------+-----------------+
+| Grid    | Grid.5    | RULE_MIS01      |
++---------+-----------+-----------------+
+| Grid    | Grid.6    | RULE_MIS01      |
++---------+-----------+-----------------+
+| Grid    | Grid.7    | RULE_MIS01      |
++---------+-----------+-----------------+
+| Grid    | Grid.8    | RULE_MIS01      |
++---------+-----------+-----------------+
+| Grid    | Grid.9    | RULE_MIS01      |
++---------+-----------+-----------------+
+| Grid    | Grid.10   | RULE_MIS01      |
++---------+-----------+-----------------+
+| Grid    | Grid.11   | RULE_MIS01      |
++---------+-----------+-----------------+
+| Grid    | Grid.12   | RULE_MIS01      |
++---------+-----------+-----------------+
+| Grid    | Grid.13   | RULE_MIS01      |
++---------+-----------+-----------------+
+| Grid    | Grid.14   | RULE_MIS01      |
++---------+-----------+-----------------+
+| Grid    | Grid.15   | RULE_MIS01      |
++---------+-----------+-----------------+
+| Grid    | Grid.16   | RULE_MIS01      |
++---------+-----------+-----------------+
+| Grid    | Grid.17   | RULE_MIS01      |
++---------+-----------+-----------------+
+| Grid    | Grid.18   | RULE_MIS01      |
++---------+-----------+-----------------+
+| Grid    | Grid.19   | RULE_MIS01      |
++---------+-----------+-----------------+
+| Grid    | Grid.20   | RULE_MIS01      |
++---------+-----------+-----------------+
+| Grid    | Grid.21   | RULE_MIS01      |
++---------+-----------+-----------------+
+| Grid    | Grid.22   | RULE_MIS01      |
++---------+-----------+-----------------+
+| Grid    | Grid.23   | RULE_MIS01      |
++---------+-----------+-----------------+
+| Grid    | Grid.24   | RULE_MIS01      |
++---------+-----------+-----------------+
+| Grid    | Grid.25   | RULE_MIS01      |
++---------+-----------+-----------------+
+| Grid    | Grid.26   | RULE_MIS01      |
++---------+-----------+-----------------+

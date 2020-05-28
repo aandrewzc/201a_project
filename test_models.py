@@ -15,12 +15,12 @@ sentences = ["INTERNAL M1 < 0.028",
              ]
 sentences = np.array(sentences)
 
-# url = "https://tfhub.dev/google/universal-sentence-encoder/4"
-# url="./universal-sentence-encoder_4"
-# model1 = hub.load(url)
-# universalEncoder = model1(sentences)
-# universalEncoder = np.array(universalEncoder)
-# print(universalEncoder.shape)
+url = "https://tfhub.dev/google/universal-sentence-encoder/4"
+url="./universal-sentence-encoder_4"
+model1 = hub.load(url)
+universalEncoder = model1(sentences)
+universalEncoder = np.array(universalEncoder)
+print(universalEncoder.shape)
 
 
 from sentence_transformers import SentenceTransformer

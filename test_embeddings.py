@@ -7,13 +7,12 @@ g = GloveEmbedding('common_crawl_840', d_emb=300, show_progress=True)
 k = KazumaCharEmbedding()
 c = ConcatEmbedding([g,k])
 
-for w in ['metal1', 'metal', 'M', 'EXT', '<', '0.035']:
-    print('embedding {}'.format(w))
+for w in ['metal1', 'metal', 'M', 'EXT', '<', '0.035', 'MSMG2', 'MSMG', 'A']:
     word = g.emb(w)
     if None in word:
-        print("\tbad embedding")
+        print(w, ":\tbad embedding")
     else:
-        print("\tgood embedding")
+        print(w, ":\tgood embedding")
     # print(k.emb(w))
 
 
