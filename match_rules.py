@@ -1,6 +1,7 @@
 import numpy as np
 import csv
 import sys
+import getopt
 
 from embeddings import GloveEmbedding, KazumaCharEmbedding
 from fuzzywuzzy import fuzz, process
@@ -12,8 +13,8 @@ from tabulate import tabulate
 # similarity():
 # Returns the cosine similarity between two vectors
 ###############################################################################
-def similarity(s1, s2):
-    return np.dot(s1,s2) / (np.linalg.norm(s1) * np.linalg.norm(s2))
+def cosine(s1, s2):
+    return 1 - (np.dot(s1,s2) / (np.linalg.norm(s1) * np.linalg.norm(s2)))
 
 def euclidean(s1, s2):
     return np.linalg.norm(s1-s2)
@@ -26,7 +27,7 @@ def euclidean(s1, s2):
 #   - value: list of matching pdk2 rule names
 # A rule may be matched to zero or more rules.
 ###############################################################################
-def match_rules(embed1, pdk1, embed2, pdk2, threshold):
+def match_rules(embed1, pdk1, embed2, pdk2, threshold, weights):
     N1 = embed1.shape[0]
     N2 = embed2.shape[0]
 
@@ -34,19 +35,31 @@ def match_rules(embed1, pdk1, embed2, pdk2, threshold):
     indices = dict()
 
     for i in range(N1):
-        s = np.zeros(N2)
-        matches[pdk1[i]['name']] = []
+        distances = np.zeros(N2)
+        curr = pdk1[i]['name']
+        matches[curr] = []
         indices[i] = []
 
         for j in range(N2):
-            s[j] = similarity(embed1[i,:], embed2[j,:])
-            if s[j] > threshold:
-                matches[pdk1[i]['name']].append(pdk2[j]['name'])
-                indices[i].append(j)
+            d1 = cosine(embed1[i,:], embed2[j,:])
+            d2 = euclidean(embed1[i,:], embed2[j,:])
+            dist = [d1, d2]
+            distances[j] = np.dot(weights, dist)
 
-        # index = np.argmax(s)
-        # matches[pdk1[i]['name']] = pdk2[index]['name']
-        # print(pdk1[i]['name'], pdk2[index]['name'])
+        print("mean: %.3f, std: %.3f, min: %.3f, max:%.3f" % (np.mean(distances), np.std(distances), np.min(distances), np.max(distances)))
+        d_sorted = np.argsort(distances)
+
+        for d in d_sorted:
+        # threshold = 10000
+        # for j in range(10):
+            # d = d_sorted[j]
+            match = pdk2[d]['name']
+
+            if distances[d] < threshold:
+                matches[curr].append(match)
+                indices[i].append(d)
+            else:
+                break
 
     return matches, indices
 
@@ -67,10 +80,18 @@ def generate_output(filename, matches, pdk1, pdk2, name1, name2):
     t = tabulate(table, headers=['Layer','PDK45', 'PDK15'],tablefmt='grid')
     """
     headers = ['Layer', name1, name2]
+
+    # csv_output contains the lines to be written to the output file
+    csv_output = []
+    csv_output.append(','.join(headers))
+
+    # format output for rules that were matched
     table = []
     for index in matches.keys():
+        # if no matches were found, report "No match"
         if not matches[index]:
             match = "No match"
+            csv_output.append( "%s,%s,No match" % (pdk1[index]['layer'], pdk1[index]['name']) )
         else:
             names = []
             for j in matches[index]:
@@ -78,35 +99,62 @@ def generate_output(filename, matches, pdk1, pdk2, name1, name2):
                 pdk2[j]['used'] = True
             match = '\n'.join(names)
 
+            csv_output.append( "%s,%s,%s" % (pdk1[index]['layer'], pdk1[index]['name'], names[0]) )
+            if len(names) > 1:
+                for n in range(1,len(names)):
+                    csv_output.append( ",,%s" % names[n] )
+
+        # add entry to the table
         entry = (pdk1[index]['layer'], pdk1[index]['name'], match)
         table.append(entry)
     t = tabulate(table, headers=headers, tablefmt='grid')
 
+    # blank lines to divide two tables
+    csv_output.append('')
+    csv_output.append('')
+
+    # Headers for unmatched pdk2 rules
+    csv_output.append('Layer,%s' % name2)
+
+    # extract rules of pdk2 that were unmatched, sorted by layer
     unused = {}
     for rule in pdk2:
         # store layers
         layer = rule['layer']
         if layer not in unused.keys():
             unused[layer] = []
-
         # if rule is unused
         if 'used' not in rule.keys():
             unused[layer].append(rule['name'])
+
     table2 = []
     for layer in unused.keys():
+        # layer without unmatched rules
         if not unused[layer]:
             entry = (layer, "All matched")
+            csv_output.append("%s,All matched" % layer)
+
         else:
-            entry = (layer, '\n'.join(unused[layer]))
+            names = unused[layer]
+            entry = (layer, '\n'.join(names))
+            csv_output.append( "%s,%s" % (layer, names[0]) )
+            if len(names) > 1:
+                for n in range(1,len(names)):
+                    csv_output.append( ",%s" % names[n] )
+
         table2.append(entry)
     t2 = tabulate(table2, headers=['Layer', name2], tablefmt='grid')
-
+    
+    total_output = '\n'.join(csv_output)
+    
     with open(filename, 'w') as f:
+        f.write(total_output)
+
+    with open('output.txt', 'w') as f:
         f.write('Matched Rules\n')
         f.write(t)
         f.write('\n\n\nUnmatched Rules\n')
         f.write(t2)
-
 
 
 def pair_layers(list1, list2, threshold):
@@ -184,7 +232,7 @@ def add_csv_data(rul_file, csv_file, rul_word_count, ground_truth):
         min_score = 10000
         index = -1
         for j in range(csv_count):
-            s = similarity(rul_embed[i,:], csv_embed[j,:])
+            s = cosine(rul_embed[i,:], csv_embed[j,:])
             if s < min_score:
                 min_score = s
                 index = j
@@ -195,7 +243,7 @@ def add_csv_data(rul_file, csv_file, rul_word_count, ground_truth):
         if correct_name != name:
             if correct_name:
                 correct_i = [ i for i in range(csv_count) if csv_file[i]['name'] == correct_name][0]
-                s = similarity(rul_embed[i,:], csv_embed[correct_i,:])
+                s = cosine(rul_embed[i,:], csv_embed[correct_i,:])
                 print("%s, %s (%.6f), %s (%.6f)" % (rul_file[i]['name'], name, min_score, correct_name, s) )
             else:
                 print("%s, %s, %.6f" % (rul_file[i]['name'], name, min_score) )
@@ -230,41 +278,91 @@ def check_matches(matches, match_file):
 
 
 def main():
-    if len(sys.argv) > 1:
-        print(sys.argv[1:])
+    output_file = "results.csv"
 
-    NUMBER_REPLACEMENT = "NUMBER"
-    THRESHOLD = 0.5
-    WEIGHTS = [0.5, 1]
+    # Default parameters, can be overwritten by command line paramters
+    replacement = "NUMBER"
+    threshold = 0.5
+    dist_weights = [1, 1]
+    feature_weights = [1, 1]
     features = ['rule', 'description']
     num_features = len(features)
     embedding_type = "char"
-    output_file = "output.txt"
 
     remove_jointpc = False
     weighted_avg = True
     remove_pc = True
     a = 0.001
 
+    name1 = 'FreePDK45'
+    name2 = 'FreePDK15'
     csv_file1 = "calibreDRC_45.csv"
     csv_file2 = "calibreDRC_15.csv"
     rul_file1 = "calibreDRC_45.rul"
     rul_file2 = "calibreDRC_15.rul"
 
-    print("----------Parameters----------")
-    print("NUMBER_REPLACEMENT: %s" % NUMBER_REPLACEMENT)
-    print("THRESHOLD = %.3f" % THRESHOLD)
-    print("WEIGHTS:")
-    for i, w in enumerate(WEIGHTS):
-        print("\t'%s' = %.2f" % (features[i], w))
-    print("------------------------------")
+    if len(sys.argv) > 1:
+        try:
+            options = ["number=", "threshold=", "feature_weights=", "type=", 
+                        "features=", "dist_weights=", "weighted=", "jointpc=", 
+                        "removepc="]
+            opts, args = getopt.getopt(sys.argv[1:], "", options)
+        except getopt.GetoptError as err:
+            print(err)
+            sys.exit(2)
+
+        for option, arg in opts:
+            if option == "--number":
+                replacement = arg
+            elif option == "--threshold":
+                threshold = float(arg)
+            elif option == "--feature_weights":
+                feature_weights = [float(num) for num in arg.split(',')]
+            elif option == "--features":
+                features = arg.split(',')
+            elif option == "--type":
+                embedding_type = arg
+            elif option == "--dist_weights":
+                dist_weights = [float(num) for num in arg.split(',')]
+            elif option == "--weighted_avg":
+                if arg in ["True", "true", 'T', 't']:
+                    weighted_avg = True
+                else:
+                    weighted_avg = False
+            elif option == "--jointpc":
+                if arg in ["True", "true", 'T', 't']:
+                    remove_jointpc = True
+                else:
+                    remove_jointpc = False
+            elif option == "--removepc":
+                if arg in ["True", "true", 'T', 't']:
+                  remove_pc = True
+                else:
+                    remove_pc = True
+
+    print("------------Parameters------------")
+    print("replacement: %s" % replacement)
+    print("threshold = %.3f" % threshold)
+    print("feature weights:")
+    for i, w in enumerate(feature_weights):
+        print("  '%s' = %.2f" % (features[i], w))
+    print("distance weights:")
+    print("  cosine = %.2f\n  euclidean = %.2f" % (dist_weights[0], dist_weights[1]))
+    print("embedding type: %s" % embedding_type)
+    if weighted_avg:
+        print("using weighted average")
+    if remove_pc:
+        print("removing first principle component")
+    if remove_jointpc:
+        print("removing pc of joint matrix")
+    print("----------------------------------")
 
     # import rules
     print("1. Reading rules...")
     pdk1_csv, layers1 = read_csv(csv_file1)
     pdk2_csv, layers2 = read_csv(csv_file2)
-    pdk1_rul, word_count1 = read_rul(rul_file1, NUMBER_REPLACEMENT, weighted_avg)
-    pdk2_rul, word_count2 = read_rul(rul_file2, NUMBER_REPLACEMENT, weighted_avg)
+    pdk1_rul, word_count1 = read_rul(rul_file1, replacement, weighted_avg)
+    pdk2_rul, word_count2 = read_rul(rul_file2, replacement, weighted_avg)
 
     N1 = len(pdk1_rul)
     N2 = len(pdk2_rul)
@@ -280,20 +378,20 @@ def main():
     input1 = {
         'pdk': pdk1_rul,
         'features': features,
-        'weights': WEIGHTS,
+        'weights': feature_weights,
         'word_counts': word_count1,
         'a': a,
-        'number_replacement': NUMBER_REPLACEMENT,
+        'number_replacement': replacement,
         'remove_pc': remove_pc
     }
 
     input2 = {
         'pdk': pdk2_rul,
         'features': features,
-        'weights': WEIGHTS,
+        'weights': feature_weights,
         'word_counts': word_count2,
         'a': a,
-        'number_replacement': NUMBER_REPLACEMENT,
+        'number_replacement': replacement,
         'remove_pc': remove_pc
     }
 
@@ -308,19 +406,19 @@ def main():
 
     # match rules
     print("3. Matching pdk45 to pdk15...")
-    matches1, index1 = match_rules(embed1, pdk1_rul, embed2, pdk2_rul, THRESHOLD)
+    matches1, index1 = match_rules(embed1, pdk1_rul, embed2, pdk2_rul, threshold, dist_weights)
 
     score = check_matches(matches1, "45to15.csv")
     print("  %.3f%% correct" % (score*100))
 
     print("4. Matching pdk15 to pdk45...")
-    matches2, index2 = match_rules(embed2, pdk2_rul, embed1, pdk1_rul, THRESHOLD)
+    matches2, index2 = match_rules(embed2, pdk2_rul, embed1, pdk1_rul, threshold, dist_weights)
 
     score = check_matches(matches2, "15to45.csv")
     print("  %.3f%% correct" % (score*100))
 
     print("Writing output to %s" % output_file)
-    generate_output(output_file, index1, pdk1_rul, pdk2_rul, 'FreePDK45', 'FreePDK15')
+    generate_output(output_file, index1, pdk1_rul, pdk2_rul, name1, name2)
 
 
 if __name__ == "__main__":

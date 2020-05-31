@@ -4,6 +4,7 @@ from sentence_transformers import SentenceTransformer
 from sklearn.decomposition import TruncatedSVD
 import tensorflow as tf
 import tensorflow_hub as hub
+import os
 
 ###############################################################################
 # compute_pc() and remove_pc()
@@ -75,20 +76,46 @@ class SentenceEmbedding:
     def __init__(self, embedding_type, inputs):
         if embedding_type == "char":
             self.wordEmbed = KazumaCharEmbedding()
+            self.sentenceEmbed = self.embed_sentence
             self.size = 100
         # elif embedding_type == "glove":
         #     self.wordEmbed = GloveEmbedding('common_crawl_840', d_emb=300, show_progress=True)
+        #     self.sentenceEmbed = self.embed_sentence
         #     self.size = 300
         elif embedding_type == "bert":
-            self.bertEmbed = SentenceTransformer('./bert-base-nli-mean-tokens')
+            try:
+                bertEmbed = SentenceTransformer('./bert-base-nli-mean-tokens')
+            except OSError as e:
+                print(e)
+                print("Could not find model in current directory: %s" % os.getcwd())
+                exit(1)
+            self.sentenceEmbed = bertEmbed.encode
             self.size = 768
-        elif embedding_type == "bert-stsb":
-            self.bertEmbed = SentenceTransformer('./bert-base-nli-stsb-mean-tokens')
-            self.size = 768
-        elif embedding_type == "universal":
-            self.univEmbed = hub.load("./universal-sentence-encoder_4")
-            self.size = 512
 
+        elif embedding_type == "bert-stsb":
+            try:
+                bertEmbed = SentenceTransformer('./bert-base-nli-stsb-mean-tokens')
+            except OSError as e:
+                print(e)
+                print("Could not find model in current directory: %s" % os.getcwd())
+                exit(1)
+            self.sentenceEmbed = bertEmbed.encode
+            self.size = 768
+
+        elif embedding_type == "universal":
+            try:
+                univEmbed = hub.load("./universal-sentence-encoder_4")
+            except OSError as e:
+                print(e)
+                print("Could not find model in current directory: %s" % os.getcwd())
+                exit(1)
+            self.sentenceEmbed = univEmbed
+            self.size = 512
+        
+        else:
+            print("Error: Embedding type \"%s\" not recognized" % embedding_type)
+            print("Supported types: \"char\", \"bert\", \"bert-stsb\", \"universal\"")
+            exit(1)
 
         self.type = embedding_type
         self.pdk = inputs['pdk']
@@ -103,40 +130,45 @@ class SentenceEmbedding:
 
     ###############################################################################
     # embed_sentence():
-    # Returns an embedding for the provided sentence
-    # If word_counts != None, computes a weighted average of the word embeddings
+    # Returns list of embeddings for the provided sentences
+    # If self.word_counts != None, computes a weighted average of the word embeddings
     ###############################################################################
-    def embed_sentence(self, sentence):
-        words = sentence.split(' ')
-        num_words = len(words)
-        total = np.zeros(self.size)
+    def embed_sentence(self, text):
+        embeddings = []
+        N = len(text)
+        for i in range(N):
+            sentence = text[i]
+            words = sentence.split(' ')
+            num_words = len(words)
+            total = np.zeros(self.size)
 
-        for i in range(num_words):
-            w = words[i].strip()
+            for i in range(num_words):
+                w = words[i].strip()
 
-            # remove numbers
-            if self.number_replacement and w.replace('.','',1).isdigit():
-                w = self.number_replacement
+                # remove numbers
+                if self.number_replacement and w.replace('.','',1).isdigit():
+                    w = self.number_replacement
 
-            embed = np.array(self.wordEmbed.emb(w))
-            if None in embed:
-                print(w)
-                continue
+                embed = np.array(self.wordEmbed.emb(w))
+                if None in embed:
+                    print(w)
+                    continue
 
-            # add weight to words that are all caps
-            if self.weigh_capitals and w.isalpha() and w.isupper():
-                embed = self.weigh_capitals * embed
+                # add weight to words that are all caps
+                if self.weigh_capitals and w.isalpha() and w.isupper():
+                    embed = self.weigh_capitals * embed
 
-            # weigh words based on inverse of probability
-            if self.word_counts and w in self.word_counts.keys():
-                prob = self.word_counts[w] / self.word_counts['total-words']
-                weight = self.a / (self.a + prob)
-                embed = weight * embed
+                # weigh words based on inverse of probability
+                if self.word_counts and w in self.word_counts.keys():
+                    prob = self.word_counts[w] / self.word_counts['total-words']
+                    weight = self.a / (self.a + prob)
+                    embed = weight * embed
 
-            total += embed
-            
-        result = total / num_words
-        return result
+                total += embed
+                
+            result = total / num_words
+            embeddings.append(result)
+        return embeddings
 
 
     ###############################################################################
@@ -149,7 +181,6 @@ class SentenceEmbedding:
         pdk = self.pdk
         N = len(pdk)
 
-        result = np.zeros((N, self.size))
         sentences = []
         for i in range(N):
             # in case we embed a feature like name, which is not a list
@@ -157,17 +188,9 @@ class SentenceEmbedding:
                 s = ' '.join(pdk[i][key])
             else: 
                 s = pdk[i][key]
+            sentences.append(s)
 
-            if self.type == "char" or self.type == "glove":
-                result[i,:] = self.embed_sentence(s)
-            else:
-                sentences.append(s)
-
-        if self.type == "bert" or self.type == "bert-stsb":
-            result = np.array(self.bertEmbed.encode(sentences))
-        elif self.type == "universal":
-            result = np.array(self.univEmbed(sentences))
-
+        result = np.array(self.sentenceEmbed(sentences))
         return result
 
     ###############################################################################
