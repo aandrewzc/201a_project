@@ -71,17 +71,34 @@ def joint_embedding(set1, set2):
 
     return [embed1, embed2]
 
-
-class SentenceEmbedding:
+###############################################################################
+# RuleEmbedding:
+# This class is used to generate rule embeddings
+# The following models are supported and were compared
+#   char:      https://www.logos.t.u-tokyo.ac.jp/~hassy/publications/arxiv2016jmt/
+#   glove:     http://nlp.stanford.edu/projects/glove
+#   bert:      https://github.com/UKPLab/sentence-transformers
+#   bert-stsb: https://github.com/UKPLab/sentence-transformers
+#   universal: https://tfhub.dev/google/universal-sentence-encoder/4
+# ##############################################################################
+class RuleEmbedding:
     def __init__(self, embedding_type, inputs):
         if embedding_type == "char":
-            self.wordEmbed = KazumaCharEmbedding()
+            k = KazumaCharEmbedding()
+            self.wordEmbed = k.emb
             self.sentenceEmbed = self.embed_sentence
             self.size = 100
-        # elif embedding_type == "glove":
-        #     self.wordEmbed = GloveEmbedding('common_crawl_840', d_emb=300, show_progress=True)
-        #     self.sentenceEmbed = self.embed_sentence
-        #     self.size = 300
+        elif embedding_type == "glove":
+            g = GloveEmbedding('common_crawl_840', d_emb=300, show_progress=True, default='random')
+            self.wordEmbed = g.emb
+            self.sentenceEmbed = self.embed_sentence
+            self.size = 300
+        elif embedding_type == "concat":
+            self.k = KazumaCharEmbedding()
+            self.g = GloveEmbedding('common_crawl_840', d_emb=300, show_progress=True, default='random')
+            self.wordEmbed = self.concatEmbed
+            self.sentenceEmbed = self.embed_sentence
+            self.size = 400
         elif embedding_type == "bert":
             try:
                 bertEmbed = SentenceTransformer('./bert-base-nli-mean-tokens')
@@ -125,13 +142,23 @@ class SentenceEmbedding:
         self.a = inputs['a']
         self.number_replacement = inputs['number_replacement']
         self.remove_pc = inputs['remove_pc']
-        self.weigh_capitals = 2
+        self.weigh_capitals = inputs['weigh_capitals']
+
+
+    ###############################################################################
+    # Concatenates char and glove embeddings
+    ###############################################################################
+    def concatEmbed(self, word):
+        one = np.array(self.k.emb(word))
+        two = np.array(self.g.emb(word))
+        return np.append(one, two)
 
 
     ###############################################################################
     # embed_sentence():
     # Returns list of embeddings for the provided sentences
     # If self.word_counts != None, computes a weighted average of the word embeddings
+    # Weighted average based on paper by Arora et al. https://github.com/PrincetonML/SIF
     ###############################################################################
     def embed_sentence(self, text):
         embeddings = []
@@ -149,10 +176,7 @@ class SentenceEmbedding:
                 if self.number_replacement and w.replace('.','',1).isdigit():
                     w = self.number_replacement
 
-                embed = np.array(self.wordEmbed.emb(w))
-                if None in embed:
-                    print(w)
-                    continue
+                embed = np.array(self.wordEmbed(w))
 
                 # add weight to words that are all caps
                 if self.weigh_capitals and w.isalpha() and w.isupper():
@@ -192,6 +216,7 @@ class SentenceEmbedding:
 
         result = np.array(self.sentenceEmbed(sentences))
         return result
+
 
     ###############################################################################
     # embed_all():

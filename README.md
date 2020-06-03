@@ -1,8 +1,38 @@
-## 201A VLSI Design Automation Project
+# 201A VLSI Design Automation Project
 
-### Design Rule Matching 
+## Design Rule Matching 
 
-Natural Language Processing Approach
+Natural Language Processing Approach \
+Andrew Chen \
+004577818
+
+## Setup
+This program was tested using python 3.7.7 \
+To install the necessary python packages, run:
+```
+pip install -r requirements.txt
+```
+
+## Usage
+To perform rule matching, use the following command.        
+```
+python match_rules.py --pdk1=calibreDRC_45.rul --pdk2=calibreDRC_15.rul
+```
+By default the rule files used are ./calibre_45.rul and ./calibre_15.rul, included in this tarball submission. To match different PDK rulesets, pass their paths as command line parameters "pdk1" and "pdk2".
+
+
+
+### Approach
+- Use .rul file to produce a list of rules. Each rule is a dictionary; for example:
+	```
+	rule[0] = {	
+			'name' = "Well.1", 
+			'description' = ["Nwell and Pwell must not overlap"],
+			'rule' = ["AND nwell pwell"],
+			'layer' = "Well",	
+		}
+	```
+- Generate rule embeddings
 
 Keywords:
 - Glove embedding
@@ -10,29 +40,6 @@ Keywords:
 - Fuzzy string matching
 - text similarity
 - semantic similarity between sentences
-
-Approach
-- .rul file yields list of rules:
-	```
-	rule = dict {
-				  'name' = "rule_name"
-				  'description' = ["line1", "line2",...]
-				  'rule' = ["line1", ...]
-				  'layer' = "layer_name"
-				  'embedding' = []
-				}
-	```
-- read rules
-- sort rules into layers
-	* label each rule with a layer (easy for csv hard for rul)
-	* match RUL rules to csv counterparts
-	* split layer names on LAYER keyword
-- match layers between pdks
-	* compare lists of layers
-	* use embeddings or string matchings
-- for each layer
-	- match rules between pdks
-		* use embeddings or matching techniques
 
 Ideas
 - Embeddings

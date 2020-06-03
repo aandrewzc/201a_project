@@ -3,18 +3,19 @@ import numpy as np
 
 from read_rules import read_rul, read_csv
 
-g = GloveEmbedding('common_crawl_840', d_emb=300, show_progress=True)
+g = GloveEmbedding('common_crawl_840', d_emb=300, show_progress=True, default='zero')
 k = KazumaCharEmbedding()
 c = ConcatEmbedding([g,k])
 
 for w in ['metal1', 'metal', 'M', 'EXT', '<', '0.035', 'MSMG2', 'MSMG', 'A']:
-    word = g.emb(w)
+    word = np.array(g.emb(w))
+    word1 = np.array(k.emb(w))
     if None in word:
         print(w, ":\tbad embedding")
     else:
         print(w, ":\tgood embedding")
-    # print(k.emb(w))
-
+    out = np.append(word1, word)
+    print(out.shape)
 
 diff1 = np.array(k.emb('metal1')) - np.array(k.emb('METAL1'))
 diff2 = np.array(k.emb('metal1')) - np.array(k.emb('layer'))

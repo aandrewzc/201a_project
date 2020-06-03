@@ -1,13 +1,15 @@
 import numpy as np
 import csv
 import sys
+import os
 import getopt
 
 from embeddings import GloveEmbedding, KazumaCharEmbedding
-from fuzzywuzzy import fuzz, process
-from read_rules import read_csv, read_rul
-from embed_rules import SentenceEmbedding, joint_embedding
 from tabulate import tabulate
+
+# from fuzzywuzzy import fuzz, process
+from src.read_rules import read_csv, read_rul
+from src.embed_rules import RuleEmbedding, joint_embedding
 
 ###############################################################################
 # similarity():
@@ -27,7 +29,7 @@ def euclidean(s1, s2):
 #   - value: list of matching pdk2 rule names
 # A rule may be matched to zero or more rules.
 ###############################################################################
-def match_rules(embed1, pdk1, embed2, pdk2, threshold, weights):
+def match_rules(embed1, pdk1, embed2, pdk2, t, weights):
     N1 = embed1.shape[0]
     N2 = embed2.shape[0]
 
@@ -46,7 +48,12 @@ def match_rules(embed1, pdk1, embed2, pdk2, threshold, weights):
             dist = [d1, d2]
             distances[j] = np.dot(weights, dist)
 
-        print("mean: %.3f, std: %.3f, min: %.3f, max:%.3f" % (np.mean(distances), np.std(distances), np.min(distances), np.max(distances)))
+        # print("mean: %.3f, std: %.3f, min: %.3f, max:%.3f" % (np.mean(distances), np.std(distances), np.min(distances), np.max(distances)))
+        mean = np.mean(distances)
+        std = np.std(distances)
+
+        threshold = mean - (t*std)
+
         d_sorted = np.argsort(distances)
 
         for d in d_sorted:
@@ -59,11 +66,17 @@ def match_rules(embed1, pdk1, embed2, pdk2, threshold, weights):
                 matches[curr].append(match)
                 indices[i].append(d)
             else:
+                # since we sorted distances, loop can end early
                 break
 
     return matches, indices
 
 
+###############################################################################
+# generate_output():
+# Writes output to results file.
+# Takes dictionary of index matches and dictionaries of pdk rules as inputs.
+###############################################################################
 def generate_output(filename, matches, pdk1, pdk2, name1, name2):
     """
     # generate ground truth from csv
@@ -150,50 +163,28 @@ def generate_output(filename, matches, pdk1, pdk2, name1, name2):
     with open(filename, 'w') as f:
         f.write(total_output)
 
-    with open('output.txt', 'w') as f:
+    with open('results.txt', 'w') as f:
         f.write('Matched Rules\n')
         f.write(t)
         f.write('\n\n\nUnmatched Rules\n')
         f.write(t2)
 
 
-def pair_layers(list1, list2, threshold):
+###############################################################################
+# pair_layers():
+# Reads from a layer config file that stores the matchings of layers between PDKs 
+# Returns a list of matchings
+###############################################################################
+def pair_layers(file):
+    if not os.path.exists(file):
+        print("Layer matching file not found")
+        return None
+
     final_pairs = []
-    scorer = fuzz.ratio
-
-    while True:
-        pairs = []
-        for key in list1:
-            result = process.extract(key, list2, limit=2, scorer=scorer)
-            match = result[0][0]
-            score = result[0][1]
-            pairs.append( (key, match, score) )
-
-        max_score = threshold
-        perfect_match = False
-        best_pair = []
-        for pair in pairs:
-            key, match, score = pair
-            if score == 100:
-                perfect_match = True
-                list1.remove(key)
-                list2.remove(match)
-                print("matching", key, match, score)
-                final_pairs.append( (key,match) )
-            elif score > max_score:
-                max_score = score
-                best_pair = [key, match]
-        
-        if not best_pair:
-            break
-        elif perfect_match:
-            continue
-        else:
-            key, match = best_pair
-            list1.remove(key)
-            list2.remove(match)
-            final_pairs.append( (key,match) )
-            print("matching", key, match, max_score)    
+    with open(file, newline='') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',')
+        for row in reader:
+            final_pairs.append(row)
 
     return final_pairs
 
@@ -257,8 +248,8 @@ def add_csv_data(rul_file, csv_file, rul_word_count, ground_truth):
 
 
 def check_matches(matches, match_file):
+    correct = 0
     total = 0
-    n = len(matches.keys())
     with open(match_file, newline='') as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
         for row in reader:
@@ -266,15 +257,16 @@ def check_matches(matches, match_file):
             values = row[1:]
 
             if len(values) == 0 and len(matches[key]) == 0:
+                correct += 1
                 total += 1
-                print(key, matches[key])
-            else:
+            elif key in matches.keys():
                 for match in matches[key]:
+                    total += 1
                     if match in values:
-                        total += 1
+                        correct += 1
                         # print(key, matches[key], values)
                         break
-    return total/n
+    return correct, total
 
 
 def main():
@@ -288,24 +280,26 @@ def main():
     features = ['rule', 'description']
     num_features = len(features)
     embedding_type = "char"
+    layerfile = "layer_config.csv"
 
     remove_jointpc = False
     weighted_avg = True
     remove_pc = True
+    weigh_capitals = None
     a = 0.001
 
     name1 = 'FreePDK45'
     name2 = 'FreePDK15'
-    csv_file1 = "calibreDRC_45.csv"
-    csv_file2 = "calibreDRC_15.csv"
+    # csv_file1 = "calibreDRC_45.csv"
+    # csv_file2 = "calibreDRC_15.csv"
     rul_file1 = "calibreDRC_45.rul"
     rul_file2 = "calibreDRC_15.rul"
 
     if len(sys.argv) > 1:
         try:
             options = ["number=", "threshold=", "feature_weights=", "type=", 
-                        "features=", "dist_weights=", "weighted=", "jointpc=", 
-                        "removepc="]
+                        "features=", "dist_weights=", "weighted_avg=", "jointpc=", 
+                        "removepc=", "weigh_capitals="]
             opts, args = getopt.getopt(sys.argv[1:], "", options)
         except getopt.GetoptError as err:
             print(err)
@@ -324,6 +318,8 @@ def main():
                 embedding_type = arg
             elif option == "--dist_weights":
                 dist_weights = [float(num) for num in arg.split(',')]
+            elif option == "--weigh_capitals":
+                weigh_capitals = float(arg)
             elif option == "--weighted_avg":
                 if arg in ["True", "true", 'T', 't']:
                     weighted_avg = True
@@ -336,11 +332,12 @@ def main():
                     remove_jointpc = False
             elif option == "--removepc":
                 if arg in ["True", "true", 'T', 't']:
-                  remove_pc = True
-                else:
                     remove_pc = True
+                else:
+                    remove_pc = False
 
     print("------------Parameters------------")
+    print("embedding type: %s" % embedding_type)
     print("replacement: %s" % replacement)
     print("threshold = %.3f" % threshold)
     print("feature weights:")
@@ -348,7 +345,8 @@ def main():
         print("  '%s' = %.2f" % (features[i], w))
     print("distance weights:")
     print("  cosine = %.2f\n  euclidean = %.2f" % (dist_weights[0], dist_weights[1]))
-    print("embedding type: %s" % embedding_type)
+    if weigh_capitals:
+        print("weighing capitalized words by %.3f" % weigh_capitals)
     if weighted_avg:
         print("using weighted average")
     if remove_pc:
@@ -359,16 +357,16 @@ def main():
 
     # import rules
     print("1. Reading rules...")
-    pdk1_csv, layers1 = read_csv(csv_file1)
-    pdk2_csv, layers2 = read_csv(csv_file2)
+    # pdk1_csv, layers1 = read_csv(csv_file1)
+    # pdk2_csv, layers2 = read_csv(csv_file2)
     pdk1_rul, word_count1 = read_rul(rul_file1, replacement, weighted_avg)
     pdk2_rul, word_count2 = read_rul(rul_file2, replacement, weighted_avg)
 
-    N1 = len(pdk1_rul)
-    N2 = len(pdk2_rul)
-
-    # pairs = pair_layers(layers1, layers2, 50)
-    # print(pairs)
+    # convert to numpy arrays
+    pdk1_rul = np.array(pdk1_rul)
+    pdk2_rul = np.array(pdk2_rul)
+    print("  %s has %d rules." % (name1, len(pdk1_rul)))
+    print("  %s has %d rules." % (name2, len(pdk2_rul)))
 
     # add_csv_data(pdk1_rul, pdk1_csv, 'csv-rul-matchings-15.csv')
     # add_csv_data(pdk2_rul, pdk2_csv, word_count2, 'csv-rul-matchings-45.csv')
@@ -382,7 +380,8 @@ def main():
         'word_counts': word_count1,
         'a': a,
         'number_replacement': replacement,
-        'remove_pc': remove_pc
+        'remove_pc': remove_pc,
+        'weigh_capitals': weigh_capitals
     }
 
     input2 = {
@@ -392,33 +391,54 @@ def main():
         'word_counts': word_count2,
         'a': a,
         'number_replacement': replacement,
-        'remove_pc': remove_pc
+        'remove_pc': remove_pc,
+        'weigh_capitals': weigh_capitals
     }
 
-    E1 = SentenceEmbedding(embedding_type, input1)
-    E2 = SentenceEmbedding(embedding_type, input2)
+    E1 = RuleEmbedding(embedding_type, input1)
+    E2 = RuleEmbedding(embedding_type, input2)
 
     if remove_jointpc:
         embed1, embed2 = joint_embedding(E1,E2)
     else:
         embed1 = E1.embed_all()
-        embed2 = E2 .embed_all()
+        embed2 = E2.embed_all()
 
-    # match rules
-    print("3. Matching pdk45 to pdk15...")
-    matches1, index1 = match_rules(embed1, pdk1_rul, embed2, pdk2_rul, threshold, dist_weights)
+    print("3. Matching %s to %s..." % (name1, name2))
+    # reads input file containing 1:1 layer matchings, outputs list of tuples
+    layer_pairs = pair_layers(layerfile)
+    
+    if layer_pairs:
+        matches = {}
+        names = dict()
+        for pair in layer_pairs:
+            layer1 = pair[0]
+            layer2 = pair[1:]
 
-    score = check_matches(matches1, "45to15.csv")
-    print("  %.3f%% correct" % (score*100))
+            # extract indices of rules that belong to the current layers
+            set1 = [index for index in range(len(pdk1_rul)) if pdk1_rul[index]['layer'] == layer1]
+            set2 = [index for index in range(len(pdk2_rul)) if pdk2_rul[index]['layer'] in layer2]
 
-    print("4. Matching pdk15 to pdk45...")
-    matches2, index2 = match_rules(embed2, pdk2_rul, embed1, pdk1_rul, threshold, dist_weights)
+            # match only rules belonging to each layer
+            reduced_names, reduced_matches = match_rules(embed1[set1], pdk1_rul[set1], embed2[set2], pdk2_rul[set2], threshold, dist_weights)
+            names.update(reduced_names)
 
-    score = check_matches(matches2, "15to45.csv")
-    print("  %.3f%% correct" % (score*100))
+            # map reduced pdk indicies back to full pdk indicies
+            for key in reduced_matches.keys():
+                i = set1[key]  # index for the rule in pdk1
+                matches[i] = []
+                for match in reduced_matches[key]:
+                    matches[i].append(set2[match])  # add index of each match in pdk2
+    
+    else:
+        # match rules
+        names, matches = match_rules(embed1, pdk1_rul, embed2, pdk2_rul, threshold, dist_weights)
 
-    print("Writing output to %s" % output_file)
-    generate_output(output_file, index1, pdk1_rul, pdk2_rul, name1, name2)
+    correct,total = check_matches(names, "45to15.csv")
+    print("  %d/%d: %.3f%% correct" % (correct,total,correct/total*100))
+
+    print("4. Writing output to %s" % output_file)
+    generate_output(output_file, matches, pdk1_rul, pdk2_rul, name1, name2)
 
 
 if __name__ == "__main__":
