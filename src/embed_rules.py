@@ -1,9 +1,9 @@
 import numpy as np
 from embeddings import GloveEmbedding, KazumaCharEmbedding
-from sentence_transformers import SentenceTransformer
 from sklearn.decomposition import TruncatedSVD
-import tensorflow as tf
-import tensorflow_hub as hub
+# from sentence_transformers import SentenceTransformer
+# import tensorflow as tf
+# import tensorflow_hub as hub
 import os
 
 ###############################################################################
@@ -89,45 +89,45 @@ class RuleEmbedding:
             self.sentenceEmbed = self.embed_sentence
             self.size = 100
         elif embedding_type == "glove":
-            g = GloveEmbedding('common_crawl_840', d_emb=300, show_progress=True, default='random')
+            g = GloveEmbedding('common_crawl_840', d_emb=300, show_progress=True, default='zero')
             self.wordEmbed = g.emb
             self.sentenceEmbed = self.embed_sentence
             self.size = 300
         elif embedding_type == "concat":
             self.k = KazumaCharEmbedding()
-            self.g = GloveEmbedding('common_crawl_840', d_emb=300, show_progress=True, default='random')
+            self.g = GloveEmbedding('common_crawl_840', d_emb=300, show_progress=True, default='zero')
             self.wordEmbed = self.concatEmbed
             self.sentenceEmbed = self.embed_sentence
             self.size = 400
-        elif embedding_type == "bert":
-            try:
-                bertEmbed = SentenceTransformer('./bert-base-nli-mean-tokens')
-            except OSError as e:
-                print(e)
-                print("Could not find model in current directory: %s" % os.getcwd())
-                exit(1)
-            self.sentenceEmbed = bertEmbed.encode
-            self.size = 768
+        # elif embedding_type == "bert":
+        #     try:
+        #         bertEmbed = SentenceTransformer('./src/bert-base-nli-mean-tokens')
+        #     except OSError as e:
+        #         print(e)
+        #         print("Could not find model in current directory: %s" % os.getcwd())
+        #         exit(1)
+        #     self.sentenceEmbed = bertEmbed.encode
+        #     self.size = 768
 
-        elif embedding_type == "bert-stsb":
-            try:
-                bertEmbed = SentenceTransformer('./bert-base-nli-stsb-mean-tokens')
-            except OSError as e:
-                print(e)
-                print("Could not find model in current directory: %s" % os.getcwd())
-                exit(1)
-            self.sentenceEmbed = bertEmbed.encode
-            self.size = 768
+        # elif embedding_type == "bert-stsb":
+        #     try:
+        #         bertEmbed = SentenceTransformer('./src/bert-base-nli-stsb-mean-tokens')
+        #     except OSError as e:
+        #         print(e)
+        #         print("Could not find model in current directory: %s" % os.getcwd())
+        #         exit(1)
+        #     self.sentenceEmbed = bertEmbed.encode
+        #     self.size = 768
 
-        elif embedding_type == "universal":
-            try:
-                univEmbed = hub.load("./universal-sentence-encoder_4")
-            except OSError as e:
-                print(e)
-                print("Could not find model in current directory: %s" % os.getcwd())
-                exit(1)
-            self.sentenceEmbed = univEmbed
-            self.size = 512
+        # elif embedding_type == "universal":
+        #     try:
+        #         univEmbed = hub.load("./src/universal-sentence-encoder_4")
+        #     except OSError as e:
+        #         print(e)
+        #         print("Could not find model in current directory: %s" % os.getcwd())
+        #         exit(1)
+        #     self.sentenceEmbed = univEmbed
+        #     self.size = 512
         
         else:
             print("Error: Embedding type \"%s\" not recognized" % embedding_type)

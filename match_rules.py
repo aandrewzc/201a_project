@@ -3,11 +3,9 @@ import csv
 import sys
 import os
 import getopt
-
-from embeddings import GloveEmbedding, KazumaCharEmbedding
 from tabulate import tabulate
 
-# from fuzzywuzzy import fuzz, process
+# local files
 from src.read_rules import read_csv, read_rul
 from src.embed_rules import RuleEmbedding, joint_embedding
 
@@ -78,20 +76,6 @@ def match_rules(embed1, pdk1, embed2, pdk2, t, weights):
 # Takes dictionary of index matches and dictionaries of pdk rules as inputs.
 ###############################################################################
 def generate_output(filename, matches, pdk1, pdk2, name1, name2):
-    """
-    # generate ground truth from csv
-    table = []
-    with open('45to15.csv', newline='') as csvfile:
-        reader=csv.reader(csvfile,delimiter=',')
-        for row in reader:
-            if not row[1]:
-                m = ''
-            else:
-                m = '\n'.join(row[1:])
-            entry = (row[0].split('.')[0],row[0], m)
-            table.append(entry)
-    t = tabulate(table, headers=['Layer','PDK45', 'PDK15'],tablefmt='grid')
-    """
     headers = ['Layer', name1, name2]
 
     # csv_output contains the lines to be written to the output file
@@ -177,7 +161,7 @@ def generate_output(filename, matches, pdk1, pdk2, name1, name2):
 ###############################################################################
 def pair_layers(file):
     if not os.path.exists(file):
-        print("Layer matching file not found")
+        print("Could not find layer config file: %s" % file)
         return None
 
     final_pairs = []
@@ -188,65 +172,11 @@ def pair_layers(file):
 
     return final_pairs
 
-
-def add_csv_data(rul_file, csv_file, rul_word_count, ground_truth):
-    rul_count = len(rul_file)
-    csv_count = len(csv_file)
-
-    # csv_names = [ csv_file[i]['name'] for i in range(csv_count) ]
-    # csv_values = [ csv_file[i]['value'] for i in range(csv_count) ]
-    # csv_descrip = [ csv_file[i]['description'] for i in range(csv_count) ]
-
-    w1 = 0
-    w2 = 1
-
-    rul_desc_emb = embed_key(rul_file, 'description', rul_word_count, False)
-    rul_name_emb = embed_key(rul_file, 'name', None, False)
-    rul_embed = w1*rul_desc_emb + w2*rul_name_emb
-
-    csv_desc_emb = embed_key(csv_file, 'description', None, False)
-    csv_name_emb = embed_key(csv_file, 'name', None, False)
-    csv_embed = w1*csv_desc_emb + w2*csv_name_emb
-
-    manual_matches = []
-    with open(ground_truth, newline='') as csvfile:
-        reader = csv.reader(csvfile, delimiter=',')
-        for row in reader:
-            manual_matches.append( row )
-
-    correct = 0
-    print("Rule, Match, Correct Match")
-
-    for i in range(rul_count):
-        # rul_name = rul_file[i]['name']
-        # rul_descrip = ' '.join(rul_file[i]['description'])
-        min_score = 10000
-        index = -1
-        for j in range(csv_count):
-            s = cosine(rul_embed[i,:], csv_embed[j,:])
-            if s < min_score:
-                min_score = s
-                index = j
-
-        # check accuracy
-        name = csv_file[index]['name']
-        correct_name = manual_matches[i][1]
-        if correct_name != name:
-            if correct_name:
-                correct_i = [ i for i in range(csv_count) if csv_file[i]['name'] == correct_name][0]
-                s = cosine(rul_embed[i,:], csv_embed[correct_i,:])
-                print("%s, %s (%.6f), %s (%.6f)" % (rul_file[i]['name'], name, min_score, correct_name, s) )
-            else:
-                print("%s, %s, %.6f" % (rul_file[i]['name'], name, min_score) )
-        else:
-            correct += 1
-
-        # rul_file[i]['layer'] = layer
-    
-    print( 'totally corrrect:', (correct/rul_count)*100 )    
-    return
-
-
+###############################################################################
+# check_matches():
+# This function is only for initially testing, to compare output with manually 
+# matched rules.
+###############################################################################
 def check_matches(matches, match_file):
     correct = 0
     total = 0
@@ -273,19 +203,19 @@ def main():
     output_file = "results.csv"
 
     # Default parameters, can be overwritten by command line paramters
-    replacement = "NUMBER"
-    threshold = 0.5
-    dist_weights = [1, 1]
-    feature_weights = [1, 1]
-    features = ['rule', 'description']
+    replacement = "number"
+    threshold = 0.95
+    dist_weights = [1, 0]
+    feature_weights = [0.25, 1, 0.1]
+    features = ['rule', 'description', 'layer']
     num_features = len(features)
-    embedding_type = "char"
+    embedding_type = "concat"
     layerfile = "layer_config.csv"
 
     remove_jointpc = False
     weighted_avg = True
     remove_pc = True
-    weigh_capitals = None
+    weigh_capitals = 2
     a = 0.001
 
     name1 = 'FreePDK45'
@@ -299,7 +229,8 @@ def main():
         try:
             options = ["number=", "threshold=", "feature_weights=", "type=", 
                         "features=", "dist_weights=", "weighted_avg=", "jointpc=", 
-                        "removepc=", "weigh_capitals="]
+                        "removepc=", "weigh_capitals=", "pdk1=", "pdk2=",
+                        "name1=", "name2=", "layer_config="]
             opts, args = getopt.getopt(sys.argv[1:], "", options)
         except getopt.GetoptError as err:
             print(err)
@@ -336,6 +267,21 @@ def main():
                 else:
                     remove_pc = False
 
+            elif option == "--pdk1":
+                rul_file1 = arg
+            elif option == "--pdk2":
+                rul_file2 = arg
+            elif option == "--name1":
+                name1 = arg
+            elif option == "--name2":
+                name2 = arg
+            elif option == "--layer_config":
+                layerfile = arg
+
+    layer_pairs = pair_layers(layerfile)
+    if not layer_pairs:
+        threshold *= 3
+
     print("------------Parameters------------")
     print("embedding type: %s" % embedding_type)
     print("replacement: %s" % replacement)
@@ -368,8 +314,6 @@ def main():
     print("  %s has %d rules." % (name1, len(pdk1_rul)))
     print("  %s has %d rules." % (name2, len(pdk2_rul)))
 
-    # add_csv_data(pdk1_rul, pdk1_csv, 'csv-rul-matchings-15.csv')
-    # add_csv_data(pdk2_rul, pdk2_csv, word_count2, 'csv-rul-matchings-45.csv')
     
     # generate and store rule embeddings
     print("2. Generating rule embeddings...")
@@ -406,18 +350,17 @@ def main():
 
     print("3. Matching %s to %s..." % (name1, name2))
     # reads input file containing 1:1 layer matchings, outputs list of tuples
-    layer_pairs = pair_layers(layerfile)
     
     if layer_pairs:
         matches = {}
         names = dict()
         for pair in layer_pairs:
-            layer1 = pair[0]
+            layer1 = pair[0].strip()
             layer2 = pair[1:]
 
             # extract indices of rules that belong to the current layers
             set1 = [index for index in range(len(pdk1_rul)) if pdk1_rul[index]['layer'] == layer1]
-            set2 = [index for index in range(len(pdk2_rul)) if pdk2_rul[index]['layer'] in layer2]
+            set2 = [index for index in range(len(pdk2_rul)) if pdk2_rul[index]['layer'] in [l.strip() for l in layer2]]
 
             # match only rules belonging to each layer
             reduced_names, reduced_matches = match_rules(embed1[set1], pdk1_rul[set1], embed2[set2], pdk2_rul[set2], threshold, dist_weights)
@@ -434,8 +377,8 @@ def main():
         # match rules
         names, matches = match_rules(embed1, pdk1_rul, embed2, pdk2_rul, threshold, dist_weights)
 
-    correct,total = check_matches(names, "45to15.csv")
-    print("  %d/%d: %.3f%% correct" % (correct,total,correct/total*100))
+    # correct,total = check_matches(names, "45to15.csv")
+    # print("  %d/%d: %.3f%% correct" % (correct,total,correct/total*100))
 
     print("4. Writing output to %s" % output_file)
     generate_output(output_file, matches, pdk1_rul, pdk2_rul, name1, name2)

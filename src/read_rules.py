@@ -42,6 +42,10 @@ def read_rul(rule_file, number_replacement, count_words=False):
     value = []
     build_rule = False
 
+    if not os.path.exists(rule_file):
+        print("ERROR: Cannot find file %s" % rule_file)
+        exit(1)
+
     if count_words:
         word_counts = dict()
         total_words = 0

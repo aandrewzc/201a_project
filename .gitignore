@@ -4,3 +4,4 @@ __pycache__/
 bert*
 universal-sentence-encoder*
 trials*
+testenv/
